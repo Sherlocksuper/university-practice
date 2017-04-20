@@ -4,8 +4,7 @@ const { createRequest } = require("../util/util")
 
 router.get("/", (req, res) => {
   const ids = req.query.ids
-  console.log(ids)
-  createRequest(`http://music.163.com/api/song/detail?ids=%5B${ids}%5D`, 'GET', null)
+  createRequest(`/api/song/detail?ids=%5B${ids}%5D`, 'GET', null)
     .then(result => {
       res.setHeader("Content-Type", "application/json")
       res.send(result)
