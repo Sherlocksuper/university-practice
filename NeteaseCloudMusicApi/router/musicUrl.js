@@ -3,8 +3,8 @@ const router = express()
 const { createWebAPIRequest } = require("../util/util")
 
 router.get("/", (req, res) => {
-  const id = parseInt(req.query.id)
-  const br = parseInt(req.query.br || 999000)
+  const id = req.query.id
+  const br = req.query.br || 999000
   const data = {
     "ids": [id],
     "br": br,

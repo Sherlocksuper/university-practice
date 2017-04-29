@@ -10,7 +10,7 @@ router.get("/", (req, res) => {
 
   createWebAPIRequest(
     'music.163.com',
-    'http://music.163.com/api/radio/get',
+    '/weapi/v1/radio/get',
     'POST',
     data,
     cookie,
