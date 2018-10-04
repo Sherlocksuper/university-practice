@@ -1,29 +1,13 @@
-// 收藏歌手
-// module.exports = (req, res, createWebAPIRequest, request) => {
-//   const cookie = req.get("Cookie") ? req.get("Cookie") : "";
-//   const data = {
-//     artistId: `${req.query.id}`
-//   };
-//   createWebAPIRequest(
-//     "music.163.com",
-//     "/weapi/artist/sub",
-//     "POST",
-//     data,
-//     cookie,
-//     music_req => {
-//       res.send(music_req);
-//     },
-//     err => res.status(502).send("fetch error")
-//   );
-// };
+// 收藏与取消收藏歌手
 
 module.exports = (query, request) => {
+    query.t = (query.t == 1 ? 'sub' : 'unsub')
     const data = {
-        artistId: query.id
+        artistId: query.id,
+        artistIds: '[' + query.id + ']'
     }
     return request(
-        'POST', `http://music.163.com/weapi/artist/sub`, data,
+        'POST', `http://music.163.com/weapi/artist/${query.t}`, data,
         {crypto: 'weapi', cookie: query.cookie, proxy: query.proxy}
     )
 }
-
