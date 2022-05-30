@@ -1,4 +1,5 @@
-{ "anonymous_token": "登录网易云音乐网页版，此字段值替换为cookie中MUSIC_U对应的值",
+{
+  "anonymous_token": "REDACTED",
   "resourceTypeMap": {
     "0": "R_SO_4_",
     "1": "R_MV_5_",
