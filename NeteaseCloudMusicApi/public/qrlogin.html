@@ -15,7 +15,7 @@
   <script>
     async function checkStatus(key) {
       const res = await axios({
-        url: `/login/qr/check?key=${key}&timestamp=${Date.now()}&noCookie=true`,
+        url: `/login/qr/check?key=${key}&timestamp=${Date.now()}`,
       })
       return res.data
     }
