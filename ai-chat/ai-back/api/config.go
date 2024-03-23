@@ -7,14 +7,15 @@ import (
 	"gorm.io/gorm"
 )
 
-var dsn = "root:root@tcp(127.0.0.1:3306)/ai?charset=utf8mb4&parseTime=True&loc=Local"
+var dsn = "root:root@tcp(localhost:3306)/ai?charset=utf8mb4&parseTime=True&loc=Local"
 var Db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
 
+// var Token = "REDACTED"
+//var Token = "REDACTED"
+
 var Token = "REDACTED"
-var Model = openai.GPT3Dot5Turbo
-var MaxTokens = 400
-var UseStream = true
-var Client = openai.NewClient(Token)
+var Model = openai.GPT4
+var MaxTokens = 2000
 
 func init() {
 
