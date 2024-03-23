@@ -1,42 +1,19 @@
 package api
 
 import (
-	"github.com/gin-gonic/gin"
 	"github.com/sashabaranov/go-openai"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
 
-var dsn = "root:root@tcp(localhost:3306)/ai?charset=utf8mb4&parseTime=True&loc=Local"
-var Db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
+var Db, _ = gorm.Open(mysql.Open(DSN), &gorm.Config{})
 
-// var Token = "REDACTED"
-//var Token = "REDACTED"
-
-var Token = "REDACTED"
-var Model = openai.GPT4
-var MaxTokens = 2000
-
-func init() {
-
-}
-
-// 一些返回的code
+// openai go服务
 const (
-	SUCCESS     = 200
-	FAIL        = 400
-	NOTFOUND    = 404
-	SERVERERROR = 500
+	DSN         = "root:root@tcp(localhost:3306)/ai?charset=utf8mb4&parseTime=True&loc=Local"
+	OPENAITOKEN = "REDACTED"
+	MODEL       = openai.GPT3Dot5Turbo
+	MAXTOKENS   = 2000
 )
 
-type ReturnMessage struct {
-	Code    int    `json:"code"`
-	Message string `json:"message"`
-	Data    any    `json:"data"`
-}
-
-type Func struct {
-	Url    string `json:"url"`
-	Method string `json:"method"`
-	Action func(c *gin.Context)
-}
+// email go服务 与 redis go 服务放到各自的service里面
