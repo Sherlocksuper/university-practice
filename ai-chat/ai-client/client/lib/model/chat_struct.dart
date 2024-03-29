@@ -7,6 +7,7 @@ class ChatDetailStruct {
   String title;
   int userId;
   String systemMessage;
+  String type;
   List<Message> messages;
 
   ChatDetailStruct({
@@ -17,6 +18,7 @@ class ChatDetailStruct {
     required this.userId,
     required this.systemMessage,
     required this.messages,
+    required this.type,
   });
 
   factory ChatDetailStruct.fromJson(Map<String, dynamic> json) {
@@ -28,6 +30,7 @@ class ChatDetailStruct {
       userId: json['userId'] ?? json['UserId'],
       systemMessage: json['systemMessage'],
       messages: List<Message>.from(json['messages'].map((e) => Message.fromJson(e))),
+      type: json['type'],
     );
   }
 }

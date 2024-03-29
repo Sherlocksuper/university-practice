@@ -10,7 +10,6 @@ var Db, _ = gorm.Open(mysql.Open(DSN), &gorm.Config{})
 
 // openai go服务
 const (
-	DSN                  = "root:root@tcp(localhost:3306)/ai?charset=utf8mb4&parseTime=True&loc=Local"
 	OPENAITOKEN          = "REDACTED"
 	BASEURL              = "https://hk.xty.app/v1"
 	MODEL                = openai.GPT3Dot5Turbo
@@ -31,4 +30,33 @@ const (
 	RedisAddress  = "localhost:6379"
 	RedisPassword = ""
 	RedisDb       = 0
+)
+
+// mysql服务
+const (
+	DBAddress  = "localhost:3306"
+	DBUser     = "root"
+	DBPassword = "root"
+	DBName     = "ai"
+	DSN        = DBUser + ":" + DBPassword + "@tcp(" + DBAddress + ")/" + DBName + "?charset=utf8mb4&parseTime=True&loc=Local"
+)
+
+// qianfan go服务
+const (
+	DIFFUSSION_XL_BASEURL = "https://aip.baidubce.com/rpc/2.0/ai_custom/v1/wenxinworkshop/text2image/sd_xl"
+	QFBASEURL             = "https://aip.baidubce.com"
+	QFTOKENURL            = "/oauth/2.0/token"
+	QFAPIKey              = "REDACTED"
+	QFAPISecretKey        = "REDACTED"
+)
+
+// cos go服务
+const (
+	COS_NAME      = "sherlock-1314462060"
+	COS_REGION    = "ap-nanjing"
+	COS_SECRETID  = "REDACTED"
+	COS_SECRETKEY = "REDACTED"
+	//COS_SECRETID  = "REDACTED" //永久密钥 secretId
+	//COS_SECRETKEY = "REDACTED"     //永久密钥 secretKey
+	COS_BASEURL = "https://sherlock-1314462060.cos.ap-nanjing.myqcloud.com"
 )

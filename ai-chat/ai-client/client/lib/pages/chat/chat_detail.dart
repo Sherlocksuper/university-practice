@@ -134,9 +134,13 @@ class ChatBubbles extends StatelessWidget {
     final message = messageStruct.content;
     final role = messageStruct.role;
     return Align(
-      alignment: role == "user" ? Alignment.centerRight : Alignment.centerLeft,
+      alignment: role == "user"
+          ? Alignment.centerRight
+          : role == "system"
+              ? Alignment.center
+              : Alignment.centerLeft,
       child: Container(
-        constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.6),
+        constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * (2 / 3)),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         decoration: BoxDecoration(
@@ -152,13 +156,13 @@ class ChatBubbles extends StatelessWidget {
           ],
         ),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             MarkdownBody(
               data: message,
               selectable: true,
               styleSheet: MarkdownStyleSheet(
-                p: TextStyle(color: Colors.white),
+                p: const TextStyle(color: Colors.white),
                 code: TextStyle(color: Colors.white, backgroundColor: Colors.grey[850]),
                 codeblockDecoration: BoxDecoration(
                   color: Colors.grey[850],
@@ -186,8 +190,8 @@ class ChatBubbles extends StatelessWidget {
   LinearGradient _getBubbleGradient(String role) {
     return LinearGradient(
       colors: role == 'user'
-          ? [Color(0xFF00C6FF), Color(0xFF0078FF)] // Blue gradient for the user
-          : [Color(0xFF8983F7), Color(0xFFA3DAFB)], // Purple gradient for others
+          ? [const Color(0xFF00C6FF), const Color(0xFF0078FF)] // Blue gradient for the user
+          : [const Color(0xFF8983F7), const Color(0xFFA3DAFB)], // Purple gradient for others
       begin: Alignment.topLeft,
       end: Alignment.bottomRight,
     );

@@ -1,7 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:developer';
-
 import 'package:client/Controller/web_socket.dart';
 import 'package:client/model/chat_struct.dart';
 import 'package:client/model/message.dart';
@@ -9,7 +7,6 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
-
 import '../Constant.dart';
 import '../config.dart';
 import 'user_controller.dart';
@@ -24,45 +21,130 @@ class ChatController extends GetxController {
   void configAI() {
     String title = "默认标题";
     String systemMessage = "你是我的AI助手，我需要你的帮助";
+    AIType aiType = AIType.Text;
     Get.defaultDialog(
-      title: 'AI Config',
-      content: Column(
-        children: [
-          TextField(
-            decoration: InputDecoration(hintText: title, border: InputBorder.none),
-            onChanged: (value) {
-              title = value;
-            },
-          ),
-          TextField(
-            decoration: InputDecoration(hintText: systemMessage, border: InputBorder.none),
-            onChanged: (value) {
-              systemMessage = value;
-            },
-          ),
-        ],
+      title: 'Config your AI',
+      titleStyle: TextStyle(
+        fontSize: 18,
+        fontWeight: FontWeight.bold,
+        color: Colors.grey[300],
       ),
-      actions: [
-        TextButton(
-          onPressed: () {
-            Get.back();
-          },
-          child: const Text('取消'),
+      middleTextStyle: TextStyle(
+        fontSize: 16,
+        color: Colors.grey[100],
+      ),
+      backgroundColor: Colors.grey[850],
+      radius: 8.0,
+      barrierDismissible: true,
+      content: SizedBox(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(
+                  Icons.android,
+                  color: Colors.cyanAccent,
+                  size: 60,
+                ),
+                TextField(
+                  decoration: InputDecoration(
+                    hintText: title,
+                    hintStyle: TextStyle(
+                      color: Colors.grey[300],
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  onChanged: (value) {
+                    title = value;
+                  },
+                  style: TextStyle(
+                    color: Colors.grey[300],
+                  ),
+                ),
+                const SizedBox(height: 16),
+                GetBuilder<ChatController>(
+                  id: 'aiConfig',
+                  builder: (_) {
+                    return Row(
+                      children: [
+                        Text(
+                          'AI Type:',
+                          style: TextStyle(
+                            color: Colors.grey[300],
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Radio(
+                          value: AIType.Text,
+                          groupValue: aiType,
+                          onChanged: (value) {
+                            aiType = value as AIType;
+                            _.update(['aiConfig']);
+                          },
+                        ),
+                        Text(
+                          'Text',
+                          style: TextStyle(
+                            color: Colors.grey[300],
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Radio(
+                          value: AIType.Image,
+                          groupValue: aiType,
+                          onChanged: (value) {
+                            aiType = value as AIType;
+                            _.update(['aiConfig']);
+                          },
+                        ),
+                        Text(
+                          'Image',
+                          style: TextStyle(
+                            color: Colors.grey[300],
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
+                Text(
+                  'Would you like to start a chat now?',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey[100],
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
-        TextButton(
-          onPressed: () {
-            startAChat(title, systemMessage);
-            Get.back();
-          },
-          child: const Text('确定'),
-        ),
-      ],
+      ),
+      textConfirm: 'YES',
+      textCancel: 'NO',
+      confirmTextColor: Colors.white,
+      buttonColor: Colors.cyanAccent,
+      cancelTextColor: Colors.grey[300],
+      onConfirm: () async {
+        Get.back();
+        await EasyLoading.show(status: 'is adding...');
+        await startAChat(title, systemMessage, aiType);
+        await EasyLoading.dismiss();
+      },
+      onCancel: () {
+        Get.back();
+      },
     );
   }
 
   ///开始一个chat
-  Future<void> startAChat(String title, String systemMessage) async {
-    var map = {'title': title, 'systemMessage': systemMessage, 'userId': UserController.me.id};
+  Future<void> startAChat(String title, String systemMessage, AIType type) async {
+    String robotType = type.toString().split(".")[1];
+    var map = {'title': title, /*'systemMessage': systemMessage, */ 'userId': UserController.me.id, "type": robotType};
     var response = await dio.post(Constant.StartAChatHAT, data: map);
     if (response.data["code"] == 200) {
       getChatList();
@@ -115,7 +197,7 @@ class ChatController extends GetxController {
 
   ///删除chat
   Future<void> deleteChat(int chatId) async {
-    var response = await dio.get("${Constant.DELETECHAT}?id=$chatId");
+    var response = await dio.get("${Constant.DELETECHAT}?chatId=$chatId");
     if (response.data["code"] == 200) {
       chatList.removeWhere((element) => element.id == chatId);
       update();

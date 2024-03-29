@@ -28,4 +28,12 @@ class Constant {
   ///Version API
   static const String AllVERSION = '$BASE_URL/version/all';
   static const String LATESTVERSION = '$BASE_URL/version/latest';
+
+  ///Prompt API
+  static const String GETPROMPT = '$BASE_URL/prompt/list';
+}
+
+enum AIType {
+  Text,
+  Image,
 }

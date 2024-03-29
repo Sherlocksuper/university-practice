@@ -1,6 +1,7 @@
 package qianf
 
 import (
+	"awesomeProject3/api"
 	"encoding/json"
 	"fmt"
 	"github.com/rs/zerolog/log"
@@ -11,7 +12,7 @@ import (
 
 func Token(apiKey string, apiSecretKey string) (TokenService, error) {
 
-	url := BASEURL + TOKENURL + "?grant_type=client_credentials&client_id=" + apiKey + "&client_secret=" + apiSecretKey
+	url := api.QFBASEURL + api.QFTOKENURL + "?grant_type=client_credentials&client_id=" + apiKey + "&client_secret=" + apiSecretKey
 	payload := strings.NewReader(``)
 
 	client := &http.Client{}

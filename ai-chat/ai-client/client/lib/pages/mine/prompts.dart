@@ -1,50 +1,81 @@
+import 'package:async/async.dart';
+import 'package:client/Controller/setting_ontroller.dart';
+import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_state_manager/src/simple/get_state.dart';
+
+import '../../Constant.dart';
+import '../../config.dart';
 
 class PromptList extends StatelessWidget {
   PromptList({super.key});
 
-  final List<Map<String, String>> prompts = [
-    {
-      'title': '标题1',
-      'content': '内容1',
-    },
-    {
-      'title': '标题2',
-      'content': '内容2',
-    },
-    // 添加更多prompt...
-  ];
+  List<Prompt> prompts = [];
+  int selectedIndex = -1;
+  Function getData = tgetPrompts();
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Prompts'),
-      ),
-      body: ListView.builder(
-        itemCount: prompts.length,
-        itemBuilder: (context, index) {
-          return PromptItem(
-            title: prompts[index]['title']!,
-            content: prompts[index]['content']!,
+    if (!Get.isRegistered<SettingController>()) Get.lazyPut<SettingController>(() => SettingController());
+
+    return FutureBuilder(
+      future: () async {
+        prompts = prompts + await getData();
+      }(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(
+            child: CircularProgressIndicator(),
           );
-        },
-      ),
+        }
+        return Scaffold(
+          appBar: AppBar(
+            title: const Text('Prompts'),
+          ),
+          body: EasyRefresh(
+            onLoad: () async {
+              prompts = prompts + await getData();
+              Get.find<SettingController>().update(['promptList']);
+            },
+            child: GetBuilder<SettingController>(
+              id: 'promptList',
+              builder: (logic) {
+                return ListView.builder(
+                  itemCount: prompts.length,
+                  itemBuilder: (context, index) {
+                    return GestureDetector(
+                      onTap: () {
+                        selectedIndex = selectedIndex == index ? -1 : index;
+                        logic.update(['promptList']);
+                      },
+                      child: PromptItem(
+                        isSelected: selectedIndex == index,
+                        prompt: prompts[index],
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
+          ),
+        );
+      },
     );
   }
 }
 
 class PromptItem extends StatelessWidget {
-  const PromptItem({
+  PromptItem({
     super.key,
-    required this.title,
-    required this.content,
+    required this.isSelected,
+    required this.prompt,
   });
 
-  final String title;
-  final String content;
+  bool isSelected = false;
+  final Prompt prompt;
 
   @override
   Widget build(BuildContext context) {
@@ -63,26 +94,42 @@ class PromptItem extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    title,
+                    prompt.title,
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
                     ),
                   ),
                   const SizedBox(height: 5),
-                  Text(
-                    content * 99,
-                    style: const TextStyle(fontSize: 14),
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 4, // 可以根据需要调整
-                  ),
+                  AnimatedSize(
+                    duration: const Duration(milliseconds: 300),
+                    child: Column(
+                      children: [
+                        Text(
+                          prompt.content,
+                          style: const TextStyle(fontSize: 14),
+                          overflow: TextOverflow.clip,
+                          maxLines: isSelected ? 99 : 3,
+                        ),
+                        const Divider(),
+                        Text(
+                          'Function: ${prompt.function}',
+                          style: const TextStyle(
+                            color: Colors.grey,
+                            fontSize: 12,
+                          ),
+                          maxLines: isSelected ? 99 : 1,
+                        ),
+                      ],
+                    ),
+                  )
                 ],
               ),
             ),
             IconButton(
               icon: const Icon(Icons.copy),
               onPressed: () {
-                Clipboard.setData(ClipboardData(text: '$title\n$content'));
+                Clipboard.setData(ClipboardData(text: prompt.content));
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
                     content: Text('Prompt copied to clipboard!'),
@@ -98,25 +145,45 @@ class PromptItem extends StatelessWidget {
 }
 
 class Prompt {
-  String id;
+  int id;
   String title;
-  String description;
   String content;
+  String function;
 
   Prompt({
     required this.id,
     required this.title,
-    required this.description,
+    required this.function,
     required this.content,
   });
 
   //fromJson
   factory Prompt.fromJson(Map<String, dynamic> json) {
     return Prompt(
-      id: json['id'],
+      id: json['id'] ?? json['ID'],
       title: json['title'],
-      description: json['description'],
       content: json['content'],
+      function: json['function'] ?? json['title'],
     );
   }
+}
+
+//定义一个返回值为函数的函数
+Function tgetPrompts() {
+  int offset = 0;
+
+  return () async {
+    print('offset: $offset');
+    var response = await dio.get("${Constant.GETPROMPT}?offset=$offset");
+    if (response.data['code'] == 200) {
+      print(response.data['data']);
+      List<Prompt> prompts = [];
+      for (var item in response.data['data']) {
+        prompts.add(Prompt.fromJson(item));
+      }
+      offset++;
+      return prompts;
+    } else {}
+    return [];
+  };
 }

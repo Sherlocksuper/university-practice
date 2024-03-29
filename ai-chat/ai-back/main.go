@@ -1,10 +1,7 @@
 package main
 
 import (
-	"awesomeProject3/docs"
-	swaggerFiles "github.com/swaggo/files"
 	_ "github.com/swaggo/gin-swagger"
-	ginSwagger "github.com/swaggo/gin-swagger"
 )                                  // gin-swagger middleware
 import _ "github.com/swaggo/files" // swagger embed files
 
@@ -19,12 +16,6 @@ import (
 	"os"
 )
 
-type request struct {
-	Type string `json:"type"`
-	Path string `json:"path"`
-	Fun  func(c *gin.Context)
-}
-
 func init() {
 	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
 	zerolog.SetGlobalLevel(zerolog.DebugLevel)
@@ -35,10 +26,11 @@ func init() {
 	err = api.Db.AutoMigrate(&api.Chat{})
 	err = api.Db.AutoMigrate(&api.Message{})
 	err = api.Db.AutoMigrate(&api.Version{})
-	err = api.Db.AutoMigrate(&api.Prompt{})
+
 	if err != nil {
 		log.Error().Msg("数据库迁移失败：" + err.Error())
 	}
+
 }
 
 func main() {
@@ -108,15 +100,6 @@ func main() {
 	})
 
 	r.GET("/ws", ws.Handler)
-
-	docs.SwaggerInfo.Title = "Swagger Example API"
-	docs.SwaggerInfo.Description = "This is a sample server Petstore server."
-	docs.SwaggerInfo.Version = "1.0"
-	docs.SwaggerInfo.Host = "petstore.swagger.io"
-	docs.SwaggerInfo.BasePath = "/v1"
-	docs.SwaggerInfo.Schemes = []string{"http", "https"}
-	// use ginSwagger middleware to serve the API docs
-	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	r.Run(":8080")
 }

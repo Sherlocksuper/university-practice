@@ -1,3 +1,4 @@
+import 'package:client/Controller/setting_ontroller.dart';
 import 'package:client/Controller/web_socket.dart';
 import 'package:dio/dio.dart';
 import 'package:get/get.dart';
@@ -9,4 +10,5 @@ Dio dio = Dio();
 void afterLogin() {
   WSController.init();
   Get.lazyPut<ChatController>(() => ChatController());
+  Get.lazyPut<SettingController>(() => SettingController());
 }

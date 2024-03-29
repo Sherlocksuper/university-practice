@@ -22,7 +22,7 @@ class Message {
       updatedAt: json['updatedAt'] ?? DateTime.now().toString(),
       chatId: json['chatId'],
       role: json['role'],
-      content: json['content'],
+      content: json['content'] ?? "",
     );
   }
 }

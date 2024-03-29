@@ -16,7 +16,7 @@ type Chat = api.Chat
 
 type ChatService interface {
 	// StartAChat / 增删改查
-	StartAChat(title string, userId string, systemMessage string) error
+	StartAChat(chat *api.Chat) error
 
 	DeleteChat(id string) error
 
@@ -31,36 +31,12 @@ type ChatService interface {
 
 type chatService struct{}
 
-// StartAChat ShowAccount godoc
-//
-//	@Summary		start a chat
-//	@Description	start a chat
-//	@Tags			chat
-//	@Accept			json
-//	@Produce		json
-//	@Param			id	path		int	true	"Account ID"
-//	@Success		200	{object}	api.User
-//	@Router			/chat/start [get]
-func (c chatService) StartAChat(title string, id string, systemMessage string) error {
-	log.Info().Msg("用户" + id + "开始一个" + title + "的聊天" + "location is :service/chat.go  StartAChat")
-	if len(title) == 0 || title == "" {
-		return errors.New("title can not be empty")
-	}
-	if len(systemMessage) == 0 {
-		systemMessage = api.DefaultSystemMessage
-	}
-	Idint, _ := strconv.Atoi(id)
+func (c chatService) StartAChat(chat *api.Chat) error {
+	title := chat.Title
+	userId := chat.UserID
 
-	messages := []api.Message{
-		{Role: openai.ChatMessageRoleSystem, Content: systemMessage},
-	}
-
-	chat := Chat{
-		Title:         title,
-		UserID:        uint(Idint),
-		Messages:      messages,
-		SystemMessage: systemMessage,
-	}
+	log.Info().Msg("用户" + strconv.Itoa(int(userId)) + "开始一个" + title + "的聊天" + "location is :service/chat.go  StartAChat")
+	chat.Messages = []api.Message{}
 
 	api.Db.Create(&chat)
 	return nil
@@ -112,10 +88,8 @@ func (c chatService) GetChatList(chats *[]Chat, userId string) error {
 	return nil
 }
 
-// SendMessage 发送消息
-// 1.在数据库中保存
-// 2.调用openai的streamMessages方法
 func (c chatService) SendMessage(context *gin.Context, chatId string, message string) error {
+
 	log.Info().Msg("chatId is :" + chatId + "location is :service/chat.go  SendMessage")
 	chat := Chat{}
 	err := api.Db.Model(&Chat{}).Preload("Messages").Find(&chat, chatId)
@@ -123,6 +97,7 @@ func (c chatService) SendMessage(context *gin.Context, chatId string, message st
 		return errors.New("chat not found")
 	}
 
+	//数据库保存信息
 	chat.Messages = append(chat.Messages, api.Message{Role: openai.ChatMessageRoleUser, Content: message})
 	response := streamMessages(buildOpenAIMessages(&chat.Messages), context)
 	chat.Messages = append(chat.Messages, api.Message{Role: openai.ChatMessageRoleAssistant, Content: response})
@@ -151,6 +126,7 @@ func (c chatService) SaveAIResponse(chatId string, content string) {
 	return
 }
 
+// 构建openai的messages
 func NewChatService() ChatService {
 	return &chatService{}
 }

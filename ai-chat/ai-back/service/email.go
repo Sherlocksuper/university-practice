@@ -16,20 +16,6 @@ type emailService struct {
 	authorPassword string
 }
 
-// SendEmail 添加SendEmail swagger注释
-// @Summary		send email
-// @Description	send email
-// @Tags			email
-// @Accept			json
-// @Produce		json
-// @Param    	targetEmail	query	string	true	"target email"
-// @Param    	title	query	string	true	"title"
-// @Param    	content	query	string	true	"content"
-// @Success		200	{object}	api.User
-// @Failure		400	{object}	error
-// @Failure		404	{object}	error
-// @Failure		500	{object}	error
-// @Router			/email/send [get]
 func (e emailService) SendEmail(targetEmail string, title string, content string) error {
 	fmt.Println("send email to "+targetEmail, "   location is :service/email.go  SendEmail")
 	newEmail := email.NewEmail()

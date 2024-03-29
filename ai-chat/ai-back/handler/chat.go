@@ -28,7 +28,7 @@ func (f *ChatHandler) StartAChat(c *gin.Context) {
 		c.JSON(400, api.M(api.FAIL, "参数错误", nil))
 	}
 
-	err = f.chatService.StartAChat(chat.Title, strconv.Itoa(int(chat.UserID)), chat.SystemMessage)
+	err = f.chatService.StartAChat(&chat)
 
 	if err != nil {
 		c.JSON(400, api.M(api.FAIL, err.Error(), nil))
@@ -109,4 +109,5 @@ func (f *ChatHandler) SendMessage(c *gin.Context) {
 		c.JSON(200, api.M(api.FAIL, err.Error(), nil))
 		return
 	}
+	//会在sendMessage里面返回，这里不需要再返回
 }

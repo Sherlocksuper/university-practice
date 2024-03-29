@@ -38,12 +38,14 @@ dependencies:
   get: ^4.6.6
   flutter_easyloading: ^3.0.5
   dio: ^5.4.1
-  custom_refresh_indicator: ^3.0.0
+  custom_refresh_indicator: ^3.1.0
   flutter_markdown: ^0.6.2
   web_socket_channel: ^2.4.0
   url_launcher: ^6.2.5
   path_provider: ^2.1.2
   flutter_native_splash: ^2.4.0
+  async: ^2.11.0
+  easy_refresh: ^3.3.4
 
 
 

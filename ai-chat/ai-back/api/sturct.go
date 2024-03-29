@@ -16,11 +16,19 @@ type User struct {
 
 type Chat struct {
 	gorm.Model
-	Title         string    `json:"title"`
+	Title         string    `json:"title" gorm:"default:默认标题"`
 	UserID        uint      `json:"userId"`
 	SystemMessage string    `json:"systemMessage"`
 	Messages      []Message `json:"messages"`
+	Type          ChatType  `json:"type" gorm:"default:Text"`
 }
+
+type ChatType string
+
+const (
+	TextTypeChat  ChatType = "Text"
+	ImageTypeChat ChatType = "Image"
+)
 
 type Message struct {
 	gorm.Model
@@ -32,8 +40,8 @@ type Message struct {
 type Version struct {
 	gorm.Model
 	Version      string `json:"version" gorm:"unique"`
-	Introduction string `json:"introduction"`
-	Enable       bool   `json:"enable"`
+	Introduction string `json:"introduction" gorm:"default:无描述"`
+	Enable       bool   `json:"enable" gorm:"default:true"`
 	DownloadUrl  string `json:"downloadUrl"`
 }
 
