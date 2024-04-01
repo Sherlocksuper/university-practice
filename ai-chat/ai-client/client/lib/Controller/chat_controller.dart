@@ -181,6 +181,28 @@ class ChatController extends GetxController {
     );
   }
 
+  Future<void> sendForImage(int chatId, String content) async {
+    WSController.judgeNull();
+
+    addMessage(chatId, "user", content);
+    update([chatId]);
+
+    var response = await dio.post(
+      Constant.SENDFORIMAGE,
+      data: {'chatId': chatId, 'content': content},
+    );
+
+    print(response);
+
+    if (response.data["code"] == 200) {
+      addMessage(chatId, "assistant", response.data["data"]);
+    } else {
+      EasyLoading.showError(response.data["message"]);
+    }
+
+    update([chatId]);
+  }
+
   ///获取消息列表
   Future<void> getChatList() async {
     try {

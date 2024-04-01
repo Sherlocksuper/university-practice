@@ -3,7 +3,6 @@ package handler
 import (
 	"awesomeProject3/api"
 	"awesomeProject3/service"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog/log"
 	"strconv"
@@ -97,7 +96,7 @@ func (f *ChatHandler) SendMessage(c *gin.Context) {
 	var message api.Message
 	err := c.BindJSON(&message)
 
-	log.Info().Msg("message is :" + fmt.Sprint(message.Content) + "location is :handler/chat.go  SendMessage")
+	log.Info().Msg("message is :" + message.Content + "location is :handler/chat.go  SendMessage")
 	if err != nil {
 		c.JSON(200, api.M(api.FAIL, "参数错误", nil))
 		return
@@ -110,4 +109,27 @@ func (f *ChatHandler) SendMessage(c *gin.Context) {
 		return
 	}
 	//会在sendMessage里面返回，这里不需要再返回
+}
+
+// SendForImage
+func (f *ChatHandler) SendForImage(c *gin.Context) {
+
+	var message api.Message
+	err := c.BindJSON(&message)
+	log.Info().Msg("message is :" + message.Content + "location is :handler/chat.go  SendMessage")
+
+	if err != nil {
+		c.JSON(200, api.M(api.FAIL, "参数错误", nil))
+		return
+	}
+
+	//发送消息
+	imagePath, err := f.chatService.SendForImage(strconv.Itoa(message.ChatID), message.Content)
+
+	if err != nil {
+		c.JSON(200, api.M(api.FAIL, err.Error(), nil))
+		return
+	}
+
+	c.JSON(200, api.M(api.SUCCESS, "发送成功", imagePath))
 }

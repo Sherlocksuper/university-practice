@@ -2,12 +2,16 @@ package service
 
 import (
 	"awesomeProject3/api"
+	"awesomeProject3/third_party/cos"
+	qianf2 "awesomeProject3/third_party/qianf"
+	"encoding/json"
 	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog/log"
 	"github.com/sashabaranov/go-openai"
 	"gorm.io/gorm"
 	"strconv"
+	"time"
 )
 
 var location = "service/chat.go"
@@ -27,6 +31,8 @@ type ChatService interface {
 	GetChatList(chats *[]Chat, userId string) error
 
 	SendMessage(context *gin.Context, chatId string, message string) error
+
+	SendForImage(chatId string, message string) (string, error)
 }
 
 type chatService struct{}
@@ -111,6 +117,54 @@ func (c chatService) SendMessage(context *gin.Context, chatId string, message st
 	return nil
 }
 
+func (c chatService) SendForImage(chatId string, message string) (string, error) {
+
+	log.Info().Str("chatId", chatId).Str("message", message).Msg("SendForImage")
+
+	resp, err := qianf2.GenerateImage(qianf2.ImageRequestBody{Prompt: message})
+
+	if err != nil {
+		log.Error().Str("step", "generate image").Msg(err.Error())
+		return "", err
+	}
+
+	//把response转换成json
+	var res map[string]interface{}
+	err = json.Unmarshal([]byte(resp), &res)
+
+	if err != nil {
+		log.Error().Str("step", "unmarshal response").Msg(err.Error())
+		return "", err
+	}
+
+	image := res["data"].([]interface{})[0].(map[string]interface{})["b64_image"].(string)
+
+	//上传到云
+	//获取现在的时间
+	timeNow := time.Now()
+	path, err := cos.SaveImageByBase64(image, chatId+"/"+timeNow.Format("2006-01-02-15-04-05")+".png")
+
+	if err != nil {
+		log.Error().Str("step", "save image to cos").Msg(err.Error())
+		return "", err
+	}
+
+	chat := Chat{}
+	api.Db.Model(&Chat{}).Preload("Messages").Find(&chat, chatId)
+	if err != nil {
+		return "", errors.New("chat not found")
+	}
+	chat.Messages = append(chat.Messages, api.Message{Role: openai.ChatMessageRoleUser, Content: message})
+	chat.Messages = append(chat.Messages, api.Message{Role: openai.ChatMessageRoleAssistant, Content: path})
+	api.Db.Save(&chat)
+	if err != nil {
+		log.Error().Str("location", location).Msg("save message failed")
+		return "", errors.New("save message failed")
+	}
+
+	return path, nil
+}
+
 // SaveAIResponse 保存ai回复 到数据库
 func (c chatService) SaveAIResponse(chatId string, content string) {
 	chat := Chat{}
@@ -126,7 +180,7 @@ func (c chatService) SaveAIResponse(chatId string, content string) {
 	return
 }
 
-// 构建openai的messages
+// NewChatService 创建一个chatService
 func NewChatService() ChatService {
 	return &chatService{}
 }

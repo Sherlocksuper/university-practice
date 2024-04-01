@@ -12,3 +12,6 @@ func TestToken(t *testing.T) {
 		t.Errorf("TestToken failed")
 	}
 }
+
+func TestSendForImage(t *testing.T) {
+}

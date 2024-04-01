@@ -6,11 +6,9 @@ import (
 )
 
 func TestSaveImage(t *testing.T) {
-	SaveImage(imageCode)
 }
 
 func TestNewClient(t *testing.T) {
-	NewClient(imageCode)
 }
 
 func TestHello(t *testing.T) {

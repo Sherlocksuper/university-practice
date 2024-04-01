@@ -41,6 +41,7 @@ class ChatDetail extends StatelessWidget {
                       itemBuilder: (context, index) {
                         return ChatBubbles(
                           messageStruct: chat.messages[index],
+                          type: chat.type,
                         );
                       },
                       itemCount: chat.messages.length,
@@ -104,7 +105,9 @@ class ChatDetail extends StatelessWidget {
 
                         FocusScope.of(context).requestFocus(FocusNode());
 
-                        await logic.sendMessage(chat.id, content);
+                        chat.type == 'Image'
+                            ? await logic.sendForImage(chat.id, content)
+                            : await logic.sendMessage(chat.id, content);
 
                         logic.scrollController.animateTo(
                           logic.scrollController.position.maxScrollExtent,
@@ -125,9 +128,10 @@ class ChatDetail extends StatelessWidget {
 }
 
 class ChatBubbles extends StatelessWidget {
+  final String type;
   final Message messageStruct;
 
-  const ChatBubbles({super.key, required this.messageStruct});
+  const ChatBubbles({super.key, required this.messageStruct, required this.type});
 
   @override
   Widget build(BuildContext context) {
@@ -158,18 +162,25 @@ class ChatBubbles extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            MarkdownBody(
-              data: message,
-              selectable: true,
-              styleSheet: MarkdownStyleSheet(
-                p: const TextStyle(color: Colors.white),
-                code: TextStyle(color: Colors.white, backgroundColor: Colors.grey[850]),
-                codeblockDecoration: BoxDecoration(
-                  color: Colors.grey[850],
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-            ),
+            type == 'Text' || messageStruct.role == 'user'
+                ? MarkdownBody(
+                    data: message,
+                    selectable: true,
+                    styleSheet: MarkdownStyleSheet(
+                      p: const TextStyle(color: Colors.white),
+                      code: TextStyle(color: Colors.white, backgroundColor: Colors.grey[850]),
+                      codeblockDecoration: BoxDecoration(
+                        color: Colors.grey[850],
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                  )
+                : Image.network(
+                    message,
+                    errorBuilder: (context, error, stackTrace) {
+                      return const Text('图片加载失败');
+                    },
+                  ),
             Padding(
               padding: const EdgeInsets.only(top: 5),
               child: Text(

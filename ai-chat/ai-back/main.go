@@ -67,6 +67,7 @@ func main() {
 		chatGroup.GET("/detail", chatHandler.GetChatDetail)
 		chatGroup.GET("/list", chatHandler.GetChatList)
 		chatGroup.POST("/send", chatHandler.SendMessage)
+		chatGroup.POST("/sendforimage", chatHandler.SendForImage)
 	}
 
 	versionGroup := r.Group(api.API + "/version")

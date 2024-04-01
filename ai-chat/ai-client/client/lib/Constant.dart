@@ -24,6 +24,7 @@ class Constant {
   static const String GETCHATDETAIL = '$BASE_URL/chat/detail';
   static const String GETCHATLIST = '$BASE_URL/chat/list';
   static const String SENDMESSAGE = '$BASE_URL/chat/send';
+  static const String SENDFORIMAGE = '$BASE_URL/chat/sendforimage';
 
   ///Version API
   static const String AllVERSION = '$BASE_URL/version/all';
