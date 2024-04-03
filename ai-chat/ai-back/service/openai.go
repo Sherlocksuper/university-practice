@@ -2,6 +2,7 @@ package service
 
 import (
 	"awesomeProject3/api"
+	"awesomeProject3/config"
 	"context"
 	"errors"
 	"fmt"
@@ -19,9 +20,10 @@ func init() {
 // /流式接收信息
 func streamMessages(messages []openai.ChatCompletionMessage, ginCon *gin.Context) string {
 	//设置openai的配置
-	config := openai.DefaultConfig(api.OPENAITOKEN)
-	config.BaseURL = api.BASEURL
-	c := openai.NewClientWithConfig(config)
+
+	clientConfig := openai.DefaultConfig(config.GetConfig().OpenAI.OpenAIToken)
+	clientConfig.BaseURL = config.GetConfig().OpenAI.BaseURL
+	c := openai.NewClientWithConfig(clientConfig)
 
 	//设置网络writer以及
 	w := ginCon.Writer

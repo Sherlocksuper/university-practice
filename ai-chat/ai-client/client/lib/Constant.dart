@@ -7,12 +7,15 @@ class Constant {
 
   // static const String BASE_URL = 'http://10.236.169.48:8080/aiapi';
   // static const String SOCKET_URL = 'ws://10.236.169.48:8080/ws';
-  static const String BASE_URL = "http://zing.nat100.top/aiapi";
+  static const String BASE_URL = "http://zing.nat100.top/api";
   static const String SOCKET_URL = "ws://zing.nat100.top/ws";
 
+  ///AUTH API
+  static const String LOGIN = '$BASE_URL/auth/login';
+  static const String REGISTER = '$BASE_URL/auth/register';
+  static const String RESET_PASSWORD = '$BASE_URL/auth/resetpassword';
+
   ///USER API
-  static const String LOGIN = '$BASE_URL/user/login';
-  static const String REGISTER = '$BASE_URL/user/register';
   static const String USER_INFO = '$BASE_URL/user/find';
   static const String SEND_REGISTER_CODE = '$BASE_URL/user/getemailcode';
   static const String CHECK_REGISTER_CODE = '$BASE_URL/user/checkemailcode';

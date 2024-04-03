@@ -6,9 +6,12 @@ import 'Controller/chat_controller.dart';
 
 Dio dio = Dio();
 
+void afterIn() {
+  Get.lazyPut<SettingController>(() => SettingController());
+  Get.lazyPut<ChatController>(() => ChatController());
+}
+
 //初始化登录之后的
 void afterLogin() {
   WSController.init();
-  Get.lazyPut<ChatController>(() => ChatController());
-  Get.lazyPut<SettingController>(() => SettingController());
 }

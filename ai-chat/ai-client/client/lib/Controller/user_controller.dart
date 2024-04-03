@@ -238,6 +238,18 @@ class UserController {
     await authService.clearUserFile();
     return true;
   }
+
+  static Future<void> resetPassword(String email, String latePassword) async {
+    print('重设密码中 , location : user_controller.dart ,resetPassword');
+
+    dio.post(Constant.RESET_PASSWORD, data: {'email': email, 'password': latePassword}).then((response) {
+      if (response.data["code"] == 200) {
+        EasyLoading.showSuccess('重设密码成功');
+      } else {
+        EasyLoading.showError('重设密码失败,${response.data["message"]}');
+      }
+    });
+  }
 }
 
 ///用户信息

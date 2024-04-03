@@ -1,7 +1,7 @@
 package cos
 
 import (
-	"awesomeProject3/api"
+	"awesomeProject3/config"
 	"context"
 	"encoding/base64"
 	"github.com/rs/zerolog/log"
@@ -11,13 +11,13 @@ import (
 	"strings"
 )
 
-var u, _ = url.Parse(api.COS_BASEURL)
+var u, _ = url.Parse(config.GetConfig().Cos.BaseURL)
 var b = &cos.BaseURL{BucketURL: u}
 
 var c = cos.NewClient(b, &http.Client{
 	Transport: &cos.AuthorizationTransport{
-		SecretID:  api.COS_SECRETID,
-		SecretKey: api.COS_SECRETKEY,
+		SecretID:  config.GetConfig().Cos.SecretID,
+		SecretKey: config.GetConfig().Cos.SecretKey,
 	},
 })
 
@@ -36,7 +36,7 @@ func SaveImageByBase64(imageCode string, name string) (string, error) {
 		log.Error().Str("step", "at c.Object.Put").Msg(err.Error())
 		panic(err)
 	}
-	log.Info().Str("step", "at c.Object.Put").Str("url", api.COS_BASEURL+"/"+name).Msg("success")
+	log.Info().Str("step", "at c.Object.Put").Str("url", config.GetConfig().Cos.BaseURL+"/"+name).Msg("success")
 	//返回图片地址
-	return api.COS_BASEURL + "/" + name, nil
+	return config.GetConfig().Cos.BaseURL + "/" + name, nil
 }

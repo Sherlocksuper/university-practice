@@ -1,7 +1,7 @@
 package service
 
 import (
-	"awesomeProject3/api"
+	"awesomeProject3/config"
 	"fmt"
 	"github.com/jordan-wright/email"
 	"net/smtp"
@@ -14,12 +14,14 @@ type EmailService interface {
 type emailService struct {
 	authorEmail    string
 	authorPassword string
+	title          string
+	template       string
 }
 
 func (e emailService) SendEmail(targetEmail string, title string, content string) error {
 	fmt.Println("send email to "+targetEmail, "   location is :service/email.go  SendEmail")
 	newEmail := email.NewEmail()
-	newEmail.From = "dj <" + e.authorEmail + ">"
+	newEmail.From = "Zing  <" + e.authorEmail + ">"
 	newEmail.To = []string{targetEmail}
 	newEmail.Subject = title
 	newEmail.Text = []byte(content)
@@ -32,7 +34,9 @@ func (e emailService) SendEmail(targetEmail string, title string, content string
 
 func NewEmailService() EmailService {
 	return &emailService{
-		authorEmail:    api.EmailAuthorEmail,
-		authorPassword: api.EmailPassword,
+		authorEmail:    config.GetConfig().Email.EmailAuthorEmail,
+		authorPassword: config.GetConfig().Email.EmailPassword,
+		title:          config.GetConfig().Email.EmailTitle,
+		template:       config.GetConfig().Email.EmailTemplate,
 	}
 }

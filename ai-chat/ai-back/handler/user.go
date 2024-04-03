@@ -4,6 +4,7 @@ package handler
 
 import (
 	"awesomeProject3/api"
+	"awesomeProject3/config"
 	"awesomeProject3/service"
 	"fmt"
 	"github.com/gin-gonic/gin"
@@ -36,8 +37,9 @@ func (f *UserHandler) GetEmailCode(c *gin.Context) {
 	}
 	fmt.Println("给"+userEmail+"的验证码为："+code, "   location is :handler/user.go  GetEmailCode")
 	err = redisService.Set("registerCode", code)
-	var content = fmt.Sprintf(api.EmailTemplate, code)
-	err = emailService.SendEmail(userEmail, api.EmailTitle, content)
+
+	var content = fmt.Sprintf(config.GetConfig().Email.EmailTemplate, code)
+	err = emailService.SendEmail(userEmail, config.GetConfig().Email.EmailTitle, content)
 
 	if err != nil {
 		c.JSON(200, api.M(api.FAIL, "发送失败", err.Error()))
@@ -46,8 +48,7 @@ func (f *UserHandler) GetEmailCode(c *gin.Context) {
 	c.JSON(200, api.M(api.SUCCESS, "发送成功", nil))
 }
 
-// CheckRegisterCode  参数: email(用户邮箱) code
-// 因为register要post入整个user，不太好融入，所以分开了
+// CheckRegisterCode 因为register要post入整个user，不太好融入，所以分开了
 func (f *UserHandler) CheckRegisterCode(c *gin.Context) {
 	//获取get参数，这里是email和code
 	email := c.Query("email")
@@ -61,38 +62,6 @@ func (f *UserHandler) CheckRegisterCode(c *gin.Context) {
 	} else {
 		c.JSON(200, api.M(api.FAIL, "验证失败", "验证码错误"))
 	}
-}
-
-// RegisterUser 注册接口
-func (f *UserHandler) RegisterUser(c *gin.Context) {
-	var user api.User
-	err := c.BindJSON(&user)
-	if err != nil {
-		c.JSON(200, api.M(api.FAIL, "参数错误", nil))
-		return
-	}
-	err = f.userService.RegisterUser(user.Name, user.Email, user.Password)
-	if err != nil {
-		c.JSON(200, api.M(api.FAIL, err.Error(), nil))
-		return
-	}
-	c.JSON(200, api.M(api.SUCCESS, "注册成功", nil))
-}
-
-// LoginUser 登录接口
-func (f *UserHandler) LoginUser(c *gin.Context) {
-	var user api.User
-	err := c.BindJSON(&user)
-	if err != nil || user.Email == "" || user.Password == "" {
-		c.JSON(200, api.M(api.FAIL, "邮箱或密码为空", nil))
-		return
-	}
-	err = f.userService.LoginUser(&user)
-	if err != nil {
-		c.JSON(200, api.M(api.FAIL, err.Error(), nil))
-		return
-	}
-	c.JSON(200, api.M(api.SUCCESS, "登录成功", user))
 }
 
 // FindUser 查找用户

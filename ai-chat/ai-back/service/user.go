@@ -12,16 +12,17 @@ import (
 
 type UserService interface {
 	HasNameOrEmail(name string, email string) error
-	RegisterUser(username, email, password string) error
-	LoginUser(user *api.User) error
+
+	Register(username, email, password string) error
+	Login(user *api.User) error
+	ResetPassword(email uint, password string) error
+
 	FindUser(user *api.User) error
 	FindAllUser(users *[]api.User) error
 	DeleteUser(id string) error
 }
 
-type userService struct {
-	// 可以在这里注入其他依赖，例如数据库连接、缓存等
-}
+type userService struct{}
 
 func (u userService) HasNameOrEmail(name string, email string) error {
 	var user api.User
@@ -41,8 +42,8 @@ func (u userService) HasNameOrEmail(name string, email string) error {
 	return nil
 }
 
-func (u userService) RegisterUser(username, email, password string) error {
-	log.Info().Msg("用户名字:" + username + "密码:" + password + "  注册" + "location is :service/user.go  RegisterUser")
+func (u userService) Register(username, email, password string) error {
+	log.Info().Msg("用户名字:" + username + "密码:" + password + "  注册" + "location is :service/user.go  Register")
 	err := u.HasNameOrEmail(username, email)
 	if err != nil {
 		return err
@@ -54,7 +55,18 @@ func (u userService) RegisterUser(username, email, password string) error {
 	return nil
 }
 
-func (u userService) LoginUser(user *api.User) error {
+func (u userService) ResetPassword(id uint, password string) error {
+	var user api.User
+	api.Db.First(&user, id)
+	if user.ID == 0 {
+		return errors.New("用户不存在")
+	}
+	fromPassword, _ := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	api.Db.Model(&user).Update("password", string(fromPassword))
+	return nil
+}
+
+func (u userService) Login(user *api.User) error {
 	log.Info().Msg("用户" + user.Email + "密码" + user.Password + "   登录")
 	password := user.Password
 	api.Db.Where("email = ?", user.Email).First(&user)

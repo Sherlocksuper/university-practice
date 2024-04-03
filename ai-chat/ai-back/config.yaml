@@ -1,0 +1,46 @@
+cos:
+  bucket: "sherlock-1314462060"
+  region: "ap-nanjing"
+  secretid: "REDACTED"
+  secretkey: "REDACTED"
+  baseurl: "https://sherlock-1314462060.cos.ap-nanjing.myqcloud.com"
+
+email:
+  email_author_email: "REDACTED@qq.com"
+  email_password: "REDACTED"
+  email_title: "注册验证码"
+  email_template: "您的注册验证码为：%s, 请在5分钟内完成注册"
+
+mysql:
+  host: "localhost"
+  port: 3306
+  charset: utf8mb4
+  username: "root"
+  password: "root"
+  database: "ai"
+
+openai:
+  openai_token: "REDACTED"
+  openai_baseurl: "https://hk.xty.app/v1"
+  model: "gpt-3.5-turbo"
+  max_tokens: 2000
+  default_system_message: "你是我的ai助手，请帮助我解决问题"
+
+redis:
+  address: "localhost:6379"
+  password: ""
+  db: 0
+
+qianfai:
+  diffussion_xl_baseurl: "https://aip.baidubce.com/rpc/2.0/ai_custom/v1/wenxinworkshop/text2image/sd_xl"
+  qf_baseurl: "https://aip.baidubce.com"
+  qf_tokenurl: "/oauth/2.0/token"
+  qf_apikey: "REDACTED"
+  qf_apisecretkey: "REDACTED"
+
+cors:
+  origin: "*"
+  headers: "Content-Type,Cache-Control,User-Agent,Keep-Alive,DNT,AccessToken,Authorization"
+  methods: "OPTIONS,GET,POST,PUT,DELETE"
+  credentials: false
+  max_age: 600

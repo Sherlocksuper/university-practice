@@ -1,9 +1,11 @@
-import 'dart:async';
-
+import 'package:client/Controller/setting_ontroller.dart';
+import 'package:client/pages/login/reset.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import '../../Controller/user_controller.dart';
 
 class LoginRegisterPage extends StatefulWidget {
@@ -40,18 +42,19 @@ class _LoginRegisterPageState extends State<LoginRegisterPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                if (!_isLogin) _buildTextField(_usernameController, 'Username', Icons.person_outline),
+                if (!_isLogin) BuildTextInput(controller: _usernameController, label: 'Username', icon: Icons.person),
                 const SizedBox(height: 20.0),
-                _buildTextField(_emailController, 'Email', Icons.email),
+                BuildTextInput(controller: _emailController, label: 'Email', icon: Icons.email), // 新增
                 const SizedBox(height: 20.0),
-                _buildTextField(_passwordController, 'Password', Icons.lock_outline, isPassword: true),
+                BuildTextInput(controller: _passwordController, label: 'Password', icon: Icons.lock, isPassword: true),
                 const SizedBox(height: 20.0),
                 if (!_isLogin) ...[
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Expanded(
-                        child: _buildTextField(_verificationCodeController, 'Verification Code', Icons.code), // 新增
+                        child: BuildTextInput(
+                            controller: _verificationCodeController, label: 'Verification Code', icon: Icons.lock),
                       ),
                       const SizedBox(width: 20.0),
                       ElevatedButton(
@@ -105,6 +108,15 @@ class _LoginRegisterPageState extends State<LoginRegisterPage> {
                   },
                   child: Text(_isLogin ? 'Create an account' : 'Already have an account? Login'),
                 ),
+                TextButton(
+                  style: TextButton.styleFrom(
+                    foregroundColor: Colors.grey[500], // Grey text button
+                  ),
+                  onPressed: () {
+                    Get.to(ResetPassword());
+                  },
+                  child: Text('Forgot password?'),
+                ),
               ],
             ),
           ),
@@ -113,48 +125,116 @@ class _LoginRegisterPageState extends State<LoginRegisterPage> {
     );
   }
 
-  Widget _buildTextField(TextEditingController controller, String label, IconData icon, {bool isPassword = false}) {
-    TextInputType judgeType(String label) {
-      switch (label) {
-        case 'Email':
-          return TextInputType.emailAddress;
-        case 'Verification Code':
-          return TextInputType.number;
-        default:
-          return TextInputType.text;
-      }
-    }
-
-    return TextField(
-      cursorColor: Colors.grey,
-      obscureText: isPassword,
-      controller: controller,
-      decoration: InputDecoration(
-        label: Text(label, style: const TextStyle(color: Colors.black)),
-        prefixIcon: Icon(icon),
-        enabledBorder: const OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.grey),
-        ),
-        disabledBorder: const OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.grey),
-        ),
-        focusedBorder: const OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.black),
-        ),
-        focusColor: Colors.red,
-      ),
-      style: const TextStyle(),
-      onChanged: (value) {
-        controller.text = value;
-      },
-      keyboardType: judgeType(label),
-    );
-  }
+  // Widget _buildTextField(TextEditingController controller, String label, IconData icon, {bool isPassword = false}) {
+  //   TextInputType judgeType(String label) {
+  //     switch (label) {
+  //       case 'Email':
+  //         return TextInputType.emailAddress;
+  //       case 'Verification Code':
+  //         return TextInputType.number;
+  //       default:
+  //         return TextInputType.text;
+  //     }
+  //   }
+  //
+  //   return TextField(
+  //     cursorColor: Colors.grey,
+  //     obscureText: isPassword,
+  //     controller: controller,
+  //     decoration: InputDecoration(
+  //       label: Text(label, style: const TextStyle(color: Colors.black)),
+  //       prefixIcon: Icon(icon),
+  //       enabledBorder: const OutlineInputBorder(
+  //         borderSide: BorderSide(color: Colors.grey),
+  //       ),
+  //       disabledBorder: const OutlineInputBorder(
+  //         borderSide: BorderSide(color: Colors.grey),
+  //       ),
+  //       focusedBorder: const OutlineInputBorder(
+  //         borderSide: BorderSide(color: Colors.black),
+  //       ),
+  //       focusColor: Colors.red,
+  //     ),
+  //     style: const TextStyle(),
+  //     onChanged: (value) {
+  //       controller.text = value;
+  //     },
+  //     keyboardType: judgeType(label),
+  //   );
+  // }
 
   void clearAll() {
     _usernameController.clear();
     _passwordController.clear();
     _emailController.clear();
     _verificationCodeController.clear();
+  }
+}
+
+class BuildTextInput extends StatelessWidget {
+  final TextEditingController controller;
+  final String label;
+  final IconData icon;
+  final bool isPassword;
+
+  late bool unShow;
+
+  BuildTextInput(
+      {super.key, required this.controller, required this.label, required this.icon, this.isPassword = false});
+
+  TextInputType judgeType(String label) {
+    switch (label) {
+      case 'Email':
+        return TextInputType.emailAddress;
+      case 'Verification Code':
+        return TextInputType.number;
+      case 'Password':
+        return TextInputType.text;
+      default:
+        return TextInputType.text;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    unShow = isPassword;
+    return GetBuilder<SettingController>(
+        id: label,
+        builder: (_) {
+          return TextField(
+            cursorColor: Colors.grey,
+            obscureText: unShow,
+            controller: controller,
+            decoration: InputDecoration(
+              label: Text(label, style: const TextStyle(color: Colors.black)),
+              prefixIcon: Icon(icon),
+              enabledBorder: const OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.grey),
+              ),
+              disabledBorder: const OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.grey),
+              ),
+              focusedBorder: const OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.black),
+              ),
+              focusColor: Colors.red,
+              //pre 眼睛
+              suffixIcon: isPassword
+                  ? IconButton(
+                      icon: const Icon(Icons.remove_red_eye),
+                      onPressed: () {
+                        unShow = !unShow;
+                        _.update([label]);
+                      },
+                    )
+                  : null,
+            ),
+            style: const TextStyle(),
+            onChanged: (value) {
+              controller.text = value;
+            },
+            keyboardType: judgeType(label),
+          );
+        });
   }
 }
