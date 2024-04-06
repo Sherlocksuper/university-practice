@@ -27,6 +27,7 @@ func (f *VersionHandler) GetAllVersions(c *gin.Context) {
 	c.JSON(200, api.M(api.SUCCESS, "获取成功", versions))
 }
 
+// AddVersion 添加一个版本 POST
 func (f *VersionHandler) AddVersion(c *gin.Context) {
 	var version *api.Version
 	err := c.BindJSON(&version)
@@ -51,4 +52,20 @@ func (f *VersionHandler) GetLatestVersion(c *gin.Context) {
 		return
 	}
 	c.JSON(200, api.M(api.SUCCESS, "获取成功", version))
+}
+
+// UpdateVersion 更新版本
+func (f *VersionHandler) UpdateVersion(c *gin.Context) {
+	var version *api.Version
+	err := c.BindJSON(&version)
+	if err != nil {
+		c.JSON(200, api.M(api.FAIL, "参数错误", nil))
+		return
+	}
+	err = f.versionService.UpdateVersion(version)
+	if err != nil {
+		c.JSON(200, api.M(api.FAIL, err.Error(), nil))
+		return
+	}
+	c.JSON(200, api.M(api.SUCCESS, "更新成功", nil))
 }

@@ -15,8 +15,8 @@ func RegisterUserRouter(router *gin.Engine) {
 	{
 		userGroup.POST("/find", userHandler.FindUser)
 		userGroup.GET("/findAll", userHandler.FindAllUser)
-		userGroup.GET("/delete", userHandler.DeleteUser)
 		userGroup.GET("/getemailcode", userHandler.GetEmailCode)
 		userGroup.GET("/checkemailcode", userHandler.CheckRegisterCode)
+		userGroup.POST("/update", userHandler.UpdateUser)
 	}
 }

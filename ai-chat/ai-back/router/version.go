@@ -17,5 +17,6 @@ func RegisterVersionRoute(router *gin.Engine) {
 		versionGroup.GET("/all", versionHandler.GetAllVersions)
 		versionGroup.POST("/add", versionHandler.AddVersion)
 		versionGroup.GET("/latest", versionHandler.GetLatestVersion)
+		versionGroup.POST("/update", versionHandler.UpdateVersion)
 	}
 }

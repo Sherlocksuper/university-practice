@@ -2,10 +2,12 @@ package service
 
 import (
 	"awesomeProject3/api"
+	api2 "awesomeProject3/api/struct"
 	"errors"
 	"fmt"
 	"github.com/rs/zerolog/log"
 	"golang.org/x/crypto/bcrypt"
+	"time"
 )
 
 type AuthService interface {
@@ -13,6 +15,7 @@ type AuthService interface {
 	HasNameOrEmail(name string, email string) error
 	Register(username, email, password string) error
 	ResetPassword(email string, password string) error
+	Backup() error
 }
 
 type authService struct{}
@@ -73,9 +76,18 @@ func (auth authService) Login(user *api.User) error {
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)); err != nil {
 		return errors.New("密码错误")
 	}
+
+	if user.AccountStatus == api2.Lock {
+		return errors.New("账号被封禁")
+	}
+
+	now := time.Now()
+	api.Db.Model(&user).Update("last_login_time", now.Format("2006-01-02 15:04:05"))
+
 	return nil
 }
 
-func (auth authService) updateUser(user *api.User) error {
+// 备份数据库
+func (auth authService) Backup() error {
 	return nil
 }

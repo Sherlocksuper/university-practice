@@ -55,7 +55,7 @@ func (c chatService) DeleteChat(id string) error {
 	if chat.ID == 0 {
 		return errors.New("chat not found")
 	}
-	api.Db.Delete(&Chat{}, id)
+	api.Db.Unscoped().Delete(&Chat{}, id)
 	return nil
 }
 

@@ -1,11 +1,7 @@
-import 'package:client/Controller/setting_ontroller.dart';
 import 'package:client/pages/login/reset.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import '../../Controller/user_controller.dart';
 
 class LoginRegisterPage extends StatefulWidget {
@@ -125,44 +121,6 @@ class _LoginRegisterPageState extends State<LoginRegisterPage> {
     );
   }
 
-  // Widget _buildTextField(TextEditingController controller, String label, IconData icon, {bool isPassword = false}) {
-  //   TextInputType judgeType(String label) {
-  //     switch (label) {
-  //       case 'Email':
-  //         return TextInputType.emailAddress;
-  //       case 'Verification Code':
-  //         return TextInputType.number;
-  //       default:
-  //         return TextInputType.text;
-  //     }
-  //   }
-  //
-  //   return TextField(
-  //     cursorColor: Colors.grey,
-  //     obscureText: isPassword,
-  //     controller: controller,
-  //     decoration: InputDecoration(
-  //       label: Text(label, style: const TextStyle(color: Colors.black)),
-  //       prefixIcon: Icon(icon),
-  //       enabledBorder: const OutlineInputBorder(
-  //         borderSide: BorderSide(color: Colors.grey),
-  //       ),
-  //       disabledBorder: const OutlineInputBorder(
-  //         borderSide: BorderSide(color: Colors.grey),
-  //       ),
-  //       focusedBorder: const OutlineInputBorder(
-  //         borderSide: BorderSide(color: Colors.black),
-  //       ),
-  //       focusColor: Colors.red,
-  //     ),
-  //     style: const TextStyle(),
-  //     onChanged: (value) {
-  //       controller.text = value;
-  //     },
-  //     keyboardType: judgeType(label),
-  //   );
-  // }
-
   void clearAll() {
     _usernameController.clear();
     _passwordController.clear();
@@ -171,16 +129,21 @@ class _LoginRegisterPageState extends State<LoginRegisterPage> {
   }
 }
 
-class BuildTextInput extends StatelessWidget {
+class BuildTextInput extends StatefulWidget {
   final TextEditingController controller;
   final String label;
   final IconData icon;
   final bool isPassword;
 
-  late bool unShow;
-
-  BuildTextInput(
+  const BuildTextInput(
       {super.key, required this.controller, required this.label, required this.icon, this.isPassword = false});
+
+  @override
+  State<BuildTextInput> createState() => _BuildTextInputState();
+}
+
+class _BuildTextInputState extends State<BuildTextInput> {
+  late bool unShow = widget.isPassword;
 
   TextInputType judgeType(String label) {
     switch (label) {
@@ -197,44 +160,40 @@ class BuildTextInput extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    unShow = isPassword;
-    return GetBuilder<SettingController>(
-        id: label,
-        builder: (_) {
-          return TextField(
-            cursorColor: Colors.grey,
-            obscureText: unShow,
-            controller: controller,
-            decoration: InputDecoration(
-              label: Text(label, style: const TextStyle(color: Colors.black)),
-              prefixIcon: Icon(icon),
-              enabledBorder: const OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.grey),
-              ),
-              disabledBorder: const OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.grey),
-              ),
-              focusedBorder: const OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.black),
-              ),
-              focusColor: Colors.red,
-              //pre 眼睛
-              suffixIcon: isPassword
-                  ? IconButton(
-                      icon: const Icon(Icons.remove_red_eye),
-                      onPressed: () {
-                        unShow = !unShow;
-                        _.update([label]);
-                      },
-                    )
-                  : null,
-            ),
-            style: const TextStyle(),
-            onChanged: (value) {
-              controller.text = value;
-            },
-            keyboardType: judgeType(label),
-          );
-        });
+    return TextField(
+      cursorColor: Colors.grey,
+      obscureText: unShow,
+      controller: widget.controller,
+      decoration: InputDecoration(
+        label: Text(widget.label, style: const TextStyle(color: Colors.black)),
+        prefixIcon: Icon(widget.icon),
+        enabledBorder: const OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.grey),
+        ),
+        disabledBorder: const OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.grey),
+        ),
+        focusedBorder: const OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.black),
+        ),
+        focusColor: Colors.red,
+        //pre 眼睛
+        suffixIcon: widget.isPassword
+            ? IconButton(
+                icon: const Icon(Icons.remove_red_eye),
+                onPressed: () {
+                  setState(() {
+                    unShow = !unShow;
+                  });
+                },
+              )
+            : null,
+      ),
+      style: const TextStyle(),
+      onChanged: (value) {
+        widget.controller.text = value;
+      },
+      keyboardType: judgeType(widget.label),
+    );
   }
 }

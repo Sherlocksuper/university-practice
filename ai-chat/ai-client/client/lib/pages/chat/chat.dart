@@ -12,6 +12,10 @@ class ChatPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (!Get.isRegistered<ChatController>()) {
+      Get.put(ChatController());
+    }
+
     return FutureBuilder(
       future: Get.find<ChatController>().getChatList(),
       builder: (context, snapshot) {

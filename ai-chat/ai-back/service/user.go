@@ -19,7 +19,7 @@ type UserService interface {
 
 	FindUser(user *api.User) error
 	FindAllUser(users *[]api.User) error
-	DeleteUser(id string) error
+	UpdateUser(user *api.User) error
 }
 
 type userService struct{}
@@ -94,14 +94,40 @@ func (u userService) FindAllUser(users *[]api.User) error {
 	return nil
 }
 
-func (u userService) DeleteUser(id string) error {
-	//通过id删除用户，没有用户则返回错误
-	var user api.User
-	api.Db.Find(&user, id)
-	if user.ID == 0 {
-		return errors.New("用户不存在")
+// UpdateUser  更新用户信息
+func (u userService) UpdateUser(user *api.User) error {
+	userMap := map[string]interface{}{
+		"id":              user.ID,
+		"account_status":  user.AccountStatus,
+		"chat_num":        user.ChatNum,
+		"role":            user.Role,
+		"last_login_time": user.LastLoginTime,
+		"email":           user.Email,
+		"password":        user.Password,
+		"name":            user.Name,
 	}
-	api.Db.Delete(&user)
+
+	log.Info().Msg("用户" + user.Email + "更新信息")
+
+	for k, v := range userMap {
+		if v == 0 || v == "" {
+			delete(userMap, k)
+		}
+	}
+
+	if user.Role != "User" && user.Role != "Admin" {
+		delete(userMap, "role")
+	}
+
+	if user.AccountStatus != "normal" && user.AccountStatus != "ban" {
+		delete(userMap, "account_status")
+	}
+
+	err := api.Db.Model(&api.User{}).Where("id = ?", user.ID).Updates(userMap)
+
+	if err.Error != nil {
+		return err.Error
+	}
 	return nil
 }
 

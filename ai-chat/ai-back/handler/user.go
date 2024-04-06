@@ -91,18 +91,18 @@ func (f *UserHandler) FindAllUser(c *gin.Context) {
 	c.JSON(200, api.M(api.SUCCESS, "查找成功", users))
 }
 
-// DeleteUser GET 删除用户
-func (f *UserHandler) DeleteUser(c *gin.Context) {
-	id := c.Query("id")
-	if id == "" {
+// UpdateUser 更新用户
+func (f *UserHandler) UpdateUser(c *gin.Context) {
+	var user api.User
+	err := c.BindJSON(&user)
+	if err != nil {
 		c.JSON(400, api.M(api.FAIL, "参数错误", nil))
 		return
 	}
-	fmt.Println("id is :"+id, "location is :handler/user.go")
-	err := f.userService.DeleteUser(id)
+	err = f.userService.UpdateUser(&user)
 	if err != nil {
 		c.JSON(400, api.M(api.FAIL, err.Error(), nil))
 		return
 	}
-	c.JSON(200, api.M(api.SUCCESS, "删除成功", nil))
+	c.JSON(200, api.M(api.SUCCESS, "更新成功", nil))
 }

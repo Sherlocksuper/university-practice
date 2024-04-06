@@ -1,65 +1,11 @@
 package api
 
 import (
+	_ "awesomeProject3/api/struct"
+	api2 "awesomeProject3/api/struct"
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 )
 
-type User struct {
-	gorm.Model
-	Name     string `json:"name"`
-	Password string `json:"password"`
-	Token    string `json:"token"`
-	Email    string `json:"email"`
-	Chats    []Chat `json:"chats"`
-}
-
-type Chat struct {
-	gorm.Model
-	Title         string    `json:"title" gorm:"default:默认标题"`
-	UserID        uint      `json:"userId"`
-	SystemMessage string    `json:"systemMessage"`
-	Messages      []Message `json:"messages"`
-	Type          ChatType  `json:"type" gorm:"default:Text"`
-}
-
-type ChatType string
-
-const (
-	TextTypeChat  ChatType = "Text"
-	ImageTypeChat ChatType = "Image"
-)
-
-type Message struct {
-	gorm.Model
-	ChatID  int    `json:"chatId"`
-	Role    string `json:"role"`
-	Content string `json:"content"`
-}
-
-type Version struct {
-	gorm.Model
-	Version      string `json:"version" gorm:"unique"`
-	Introduction string `json:"introduction" gorm:"default:无描述"`
-	Enable       bool   `json:"enable" gorm:"default:true"`
-	DownloadUrl  string `json:"downloadUrl"`
-}
-
-type Email struct {
-	gorm.Model
-	TargetEmail string `json:"targetEmail"`
-	Title       string `json:"title"`
-	Content     string `json:"content"`
-}
-
-type Prompt struct {
-	gorm.Model
-	Title    string `json:"title"`
-	Content  string `json:"content"`
-	Function string `json:"function"`
-}
-
-// 一些返回的code
 type ReturnMessage struct {
 	Code    int    `json:"code"`
 	Message string `json:"message"`
@@ -71,3 +17,10 @@ type Func struct {
 	Method string `json:"method"`
 	Action func(c *gin.Context)
 }
+
+type User = api2.User
+type Chat = api2.Chat
+type Message = api2.Message
+type Prompt = api2.Prompt
+type Version = api2.Version
+type Email = api2.Email
