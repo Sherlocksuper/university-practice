@@ -87,7 +87,6 @@ func (auth authService) Login(user *api.User) error {
 	return nil
 }
 
-// 备份数据库
 func (auth authService) Backup() error {
 	return nil
 }

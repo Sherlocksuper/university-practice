@@ -2,7 +2,7 @@ package handler
 
 import (
 	"awesomeProject3/api"
-	"awesomeProject3/service"
+	"awesomeProject3/internal/service"
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog/log"
 )

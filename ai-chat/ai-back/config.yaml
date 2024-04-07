@@ -18,6 +18,7 @@ mysql:
   username: "root"
   password: "root"
   database: "ai"
+  backup_path: "E:/backup/"
 
 openai:
   openai_token: "REDACTED"

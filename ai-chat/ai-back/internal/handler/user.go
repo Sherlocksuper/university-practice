@@ -5,17 +5,17 @@ package handler
 import (
 	"awesomeProject3/api"
 	"awesomeProject3/config"
-	"awesomeProject3/service"
+	service2 "awesomeProject3/internal/service"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"math/rand"
 )
 
 type UserHandler struct {
-	userService service.UserService
+	userService service2.UserService
 }
 
-func NewUserHandler(userService service.UserService) *UserHandler {
+func NewUserHandler(userService service2.UserService) *UserHandler {
 	return &UserHandler{
 		userService: userService,
 	}
@@ -27,8 +27,8 @@ func (f *UserHandler) GetEmailCode(c *gin.Context) {
 	var userEmail string
 	userEmail = c.Query("email")
 
-	redisService := service.NewRedisService()
-	emailService := service.NewEmailService()
+	redisService := service2.NewRedisService()
+	emailService := service2.NewEmailService()
 
 	//生成、redis储存code
 	var code string
@@ -54,7 +54,7 @@ func (f *UserHandler) CheckRegisterCode(c *gin.Context) {
 	email := c.Query("email")
 	code := c.Query("code")
 
-	redisService := service.NewRedisService()
+	redisService := service2.NewRedisService()
 	registerCode, _ := redisService.Get("registerCode")
 	if code == registerCode {
 		redisService.Set(email, "1")

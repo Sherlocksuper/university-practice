@@ -4,6 +4,7 @@ import (
 	"awesomeProject3/config"
 	"context"
 	"encoding/base64"
+	"fmt"
 	"github.com/rs/zerolog/log"
 	"github.com/tencentyun/cos-go-sdk-v5"
 	"net/http"
@@ -11,15 +12,23 @@ import (
 	"strings"
 )
 
-var u, _ = url.Parse(config.GetConfig().Cos.BaseURL)
-var b = &cos.BaseURL{BucketURL: u}
+var u *url.URL
+var b = &cos.BaseURL{}
+var c *cos.Client
 
-var c = cos.NewClient(b, &http.Client{
-	Transport: &cos.AuthorizationTransport{
-		SecretID:  config.GetConfig().Cos.SecretID,
-		SecretKey: config.GetConfig().Cos.SecretKey,
-	},
-})
+func init() {
+	u, _ = url.Parse("https://sherlock-1314462060.cos.ap-nanjing.myqcloud.com")
+	b = &cos.BaseURL{BucketURL: u}
+
+	fmt.Println(config.GetConfig().Cos.SecretID)
+
+	c = cos.NewClient(b, &http.Client{
+		Transport: &cos.AuthorizationTransport{
+			SecretID:  config.GetConfig().Cos.SecretID,
+			SecretKey: config.GetConfig().Cos.SecretKey,
+		},
+	})
+}
 
 func SaveImageByBase64(imageCode string, name string) (string, error) {
 	decodeString, err := base64.StdEncoding.DecodeString(imageCode)
