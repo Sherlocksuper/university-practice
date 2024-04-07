@@ -98,19 +98,21 @@ func (u userService) FindAllUser(users *[]api.User) error {
 func (u userService) UpdateUser(user *api.User) error {
 	userMap := map[string]interface{}{
 		"id":              user.ID,
+		"updated_at":      user.UpdatedAt,
+		"name":            user.Name,
+		"password":        user.Password,
+		"token":           user.Token,
+		"email":           user.Email,
 		"account_status":  user.AccountStatus,
 		"chat_num":        user.ChatNum,
 		"role":            user.Role,
 		"last_login_time": user.LastLoginTime,
-		"email":           user.Email,
-		"password":        user.Password,
-		"name":            user.Name,
 	}
 
 	log.Info().Msg("用户" + user.Email + "更新信息")
 
 	for k, v := range userMap {
-		if v == 0 || v == "" {
+		if v == 0 || v == "" || len(v.([]byte)) == 0 {
 			delete(userMap, k)
 		}
 	}
@@ -123,7 +125,7 @@ func (u userService) UpdateUser(user *api.User) error {
 		delete(userMap, "account_status")
 	}
 
-	err := api.Db.Model(&api.User{}).Where("id = ?", user.ID).Updates(userMap)
+	err := api.Db.Save(&userMap)
 
 	if err.Error != nil {
 		return err.Error

@@ -2,8 +2,8 @@ package router
 
 import (
 	"awesomeProject3/api"
-	"awesomeProject3/handler"
-	"awesomeProject3/service"
+	"awesomeProject3/internal/handler"
+	"awesomeProject3/internal/service"
 	"github.com/gin-gonic/gin"
 )
 

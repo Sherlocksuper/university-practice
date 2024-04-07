@@ -25,7 +25,7 @@ func GetConfig() *Config {
 	}
 	var config Config
 
-	var configStr, _ = os.ReadFile("E:\\gptchat\\ai-back\\config.yaml")
+	var configStr, _ = os.ReadFile("./config.yaml")
 
 	err := yaml.Unmarshal(configStr, &config)
 

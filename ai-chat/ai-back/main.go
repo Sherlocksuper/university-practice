@@ -2,8 +2,7 @@ package main
 
 import (
 	"awesomeProject3/api"
-	api2 "awesomeProject3/api/struct"
-	"awesomeProject3/router"
+	"awesomeProject3/internal/router"
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -18,16 +17,15 @@ func init() {
 
 	var err error
 
-	err = api.Db.AutoMigrate(&api2.User{})
-	err = api.Db.AutoMigrate(&api2.Chat{})
-	err = api.Db.AutoMigrate(&api2.Message{})
-	err = api.Db.AutoMigrate(&api2.Version{})
-	err = api.Db.AutoMigrate(&api2.Prompt{})
+	err = api.Db.AutoMigrate(&api.User{})
+	err = api.Db.AutoMigrate(&api.Chat{})
+	err = api.Db.AutoMigrate(&api.Message{})
+	err = api.Db.AutoMigrate(&api.Version{})
+	err = api.Db.AutoMigrate(&api.Prompt{})
 
 	if err != nil {
 		log.Error().Msg("数据库迁移失败：" + err.Error())
 	}
-
 }
 
 func main() {
