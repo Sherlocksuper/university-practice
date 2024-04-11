@@ -11,7 +11,7 @@ type Config struct {
 	Cos     *Cos     `json:"cos" yaml:"cos"`
 	Redis   *Redis   `json:"redis" yaml:"redis"`
 	MySQL   *Mysql   `json:"mysql" yaml:"mysql"`
-	Cors    *Cors    `json:"cors" yaml:"cors"`
+	Cors    *Cos     `json:"cors" yaml:"cors"`
 	Email   *Email   `json:"email" yaml:"email"`
 	OpenAI  *OpenAI  `json:"openai" yaml:"openai"`
 	Qianfai *Qianfai `json:"qianfai" yaml:"qianfai"`
@@ -25,16 +25,9 @@ func GetConfig() *Config {
 	}
 	var config Config
 
-	var configStr, err = os.ReadFile("E:\\gptchat\\ai-back\\config.yaml")
+	var configStr, _ = os.ReadFile("./config.yaml")
 
-	os.DirFS("E:\\gptchat\\ai-back\\config.yaml")
-
-	if err != nil {
-		log.Error().Msg("config.yaml 读取失败：" + err.Error())
-		return nil
-	}
-
-	err = yaml.Unmarshal(configStr, &config)
+	err := yaml.Unmarshal(configStr, &config)
 
 	if err != nil {
 		log.Error().Msg("config.yaml 解析失败：" + err.Error())

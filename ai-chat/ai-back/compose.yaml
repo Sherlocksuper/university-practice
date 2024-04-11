@@ -9,7 +9,6 @@
 # https://github.com/docker/awesome-compose
 services:
   server:
-    container_name: ai-backend-server
     build:
       context: .
       target: final
@@ -33,8 +32,8 @@ services:
       - 6379:6379
 
 
-  volumes:
-    - ai-config:/app/config
+volumes:
+  todo-db:
 
   # The commented out section below is an example of how to define a PostgreSQL
   # database that your application can use. `depends_on` tells Docker Compose to
@@ -62,6 +61,10 @@ services:
   #       test: [ "CMD", "pg_isready" ]
   #       interval: 10s
   #       timeout: 5s
-  #       retries: 5
-
+#       retries: 5
+#  volumes:
+#    db-data:
+#  secrets:
+#    db-password:
+#      file: db/password.txt
 
