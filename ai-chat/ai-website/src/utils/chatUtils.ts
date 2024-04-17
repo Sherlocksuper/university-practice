@@ -1,27 +1,55 @@
-// 保存聊天记录
-const saveChat = (chat: string) => {
-    localStorage.setItem('chat', JSON.stringify(chat));
+import {ChatFormat, ChatListFormat} from "../api/standard/chatFormat.ts";
+
+//使用chatStartAt作为key,chatList储存所有的chat的startAt时间
+//索引设置为chat+chatStartAt
+
+//本地存储chatList
+const setChatList = (chatList: ChatListFormat) => {
+    localStorage.setItem("chatList", JSON.stringify(chatList));
 }
 
-// 获取聊天记录
-const getChat = () => {
-    const chat = localStorage.getItem('chat');
-    return chat ? JSON.parse(chat) : null;
+//本地获取chatList
+const getChatList = (): ChatListFormat => {
+    const chatList = localStorage.getItem("chatList");
+    if (chatList) {
+        return JSON.parse(chatList);
+    } else {
+        return {chatsStartTimes: []};
+    }
 }
 
-// 删除聊天记录
-const removeChat = () => {
-    localStorage.removeItem('chat');
+//获取对话
+const getChat = (chatStartAt: number): ChatFormat | null => {
+    const chat = localStorage.getItem("chat" + chatStartAt);
+    if (chat) {
+        return JSON.parse(chat);
+    } else {
+        return null;
+    }
 }
 
-// 更新聊天记录
-const updateChat = (chat: string) => {
-    saveChat(chat);
+//添加对话
+const addChat = (chat: ChatFormat) => {
+    const chatList = getChatList();
+    chatList.chatsStartTimes.push(chat.chatStartAt.toString());
+    setChatList(chatList);
+    localStorage.setItem("chat" + chat.chatStartAt, JSON.stringify(chat));
 }
 
-export const chatUtils = {
-    saveChat,
-    getChat,
-    removeChat,
-    updateChat
+//删除对话
+const removeChat = (chatStartAt: number) => {
+    const chatList = getChatList();
+    chatList.chatsStartTimes = chatList.chatsStartTimes.filter((item) => item !== chatStartAt.toString());
+    setChatList(chatList);
+    localStorage.removeItem("chat" + chatStartAt);
 }
+
+//更新对话
+const updateChat = (chat: ChatFormat) => {
+    localStorage.setItem("chat" + chat.chatStartAt, JSON.stringify(chat));
+}
+
+const chatLocalUtils =
+    {getChat, addChat, removeChat, updateChat, getChatList}
+
+export default chatLocalUtils

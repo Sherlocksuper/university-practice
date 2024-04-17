@@ -1,64 +1,100 @@
-import {useId, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import './ChatPage.css';
-import ChatBubble from "../../components/chat/chat_bubble.tsx";
-import {Message, Role} from "../../api/request/chat_base_setting.ts";
-import {autoCompleteChat, updateToAIStreamResponse} from "../../api/request/chat.ts";
+import {getFinalFormByList, MessageType, OriginMessageFormat, Role} from "../../api/request/format.ts";
+import ChatBubble from "./chat_bubble/chat_bubble.tsx";
+import {autoComplete} from "../../api/request/chats.ts";
+import {updateToAIStreamResponse} from "../../api/request/chat.ts";
+import {ChatFormat} from "../../api/standard/chatFormat.ts";
+import {ChatContext} from "../../chat_context.ts";
 
 // 定义ChatPage组件
-const ChatPage = () => {
-    // 状态管理
-    const [messages, setMessages] = useState<Message[]>([]);
-    const [inputMessage, setInputMessage] = useState('');
-    const messagesId = useId();
+//传入一个chat
+const ChatPage = ({chat}: { chat: ChatFormat }) => {
+    const [inputMessage, setInputMessage] = useState<string>('');
+    const [messages, setMessages] = useState<OriginMessageFormat[]>([]);
+    const [useSearch, setUseSearch] = useState<boolean>(true);
+    const chatContext = useContext(ChatContext)
 
-
-    // @ts-ignore
-    const handleInputChange = (e) => {
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setInputMessage(e.target.value);
-    };
-
-    const handleSendMessage = () => {
-        if (inputMessage.trim() !== '') {
-            const newMessages = [...messages, {role: Role.user, content: inputMessage}];
-            setMessages(newMessages);
-            handleAutoComplete(newMessages);
-            setInputMessage('');
-        }
-    };
-
-    const handleAutoComplete = async (messages: Message[]) => {
-        const newMessage: Message = {role: Role.ai, content: ""}
-        setMessages(messages => [...messages, newMessage]);
-
-        //先获取result
-        const response = await autoCompleteChat(messages);
-        const reader = response.body!.getReader();
-        const currentMessage = [...messages];
-
-        while (true) {
-            const {done, value} = await reader.read();
-            if (done) break;
-            const resultJson = updateToAIStreamResponse(value!);
-            if (resultJson!.choices[0].delta!.content.length > 0) {
-                newMessage.content += resultJson!.choices[0].delta!.content;
-                setMessages([...currentMessage, newMessage])
-            }
-            scrollToBottom();
-        }
     }
 
+    useEffect(() => {
+        setMessages(chat.messages)
+        scrollToBottom();
+    }, [chat.messages])
+
     const scrollToBottom = () => {
-        const messagesElement = document.getElementById(messagesId);
-        if (messagesElement) {
-            messagesElement.scrollTop = messagesElement.scrollHeight;
+        const chatBox = document.querySelector('.messages');
+        chatBox?.scrollTo(0, chatBox.scrollHeight);
+    }
+
+    const handleSendMessage = async () => {
+        if (inputMessage === "" || inputMessage === '') return
+
+        setInputMessage('');
+        const currentMessages = [...messages]
+        const newMessage: OriginMessageFormat = {
+            message: {
+                role: Role.user,
+                text: inputMessage
+            },
+            ref: [],
+            use_search: useSearch
         }
+        currentMessages.push(newMessage);
+        setMessages(currentMessages);
+        const finalFormat = getFinalFormByList(currentMessages)
+
+        const aiResponse: OriginMessageFormat = {
+            message: {
+                role: Role.ai,
+                text: ""
+            },
+            ref: [],
+            use_search: false,
+        }
+
+        await autoComplete(finalFormat).then(async (res) => {
+            const reader = res.body!.getReader();
+            while (true) {
+                const {done, value} = await reader!.read();
+                if (done) break;
+                const resultJson = updateToAIStreamResponse(value!);
+                try {
+                    if (resultJson!.choices[0].delta!.content.length > 0) {
+                        if (!resultJson!.choices[0].delta!.content.startsWith("检索")) {
+                            aiResponse.message.text += resultJson!.choices[0].delta!.content;
+
+                            setMessages([...currentMessages, aiResponse])
+                        } else {
+                            aiResponse.ref.push({
+                                type: MessageType.web,
+                                url: resultJson!.choices[0].delta!.content
+                            });
+                        }
+                    }
+                } catch (e) {
+                    console.log(e)
+                }
+                scrollToBottom();
+            }
+        })
+
+        //更新chat
+        currentMessages.push(aiResponse)
+        chat.messages = currentMessages;
+        chatContext.onUpdateChat(chat);
     }
 
     return (
         <div className="chat-box">
-            <div className="messages" id={messagesId}>
-                {messages.map((messageItem: Message, index) => (
-                    <ChatBubble message={messageItem} key={index}/>
+            <div className="chat-title">
+                {chat.chatStartAt}
+            </div>
+            <div className="messages">
+                {messages.map((messageItem: OriginMessageFormat, index) => (
+                    <ChatBubble orignMessage={messageItem} key={index}/>
                 ))}
             </div>
             <div className="input-area">
@@ -73,11 +109,29 @@ const ChatPage = () => {
                         }
                     }}
                 />
-                <button onClick={handleSendMessage}>发送</button>
+                <IconButton
+                    handleClick={handleSendMessage}
+                    condition={inputMessage !== "" && inputMessage !== ''}
+                    trueImage="/src/assets/send.svg"
+                    falseImage="/src/assets/send_false.svg"
+                />
+
+                <IconButton
+                    handleClick={() => setUseSearch(!useSearch)}
+                    condition={useSearch}
+                    trueImage="/src/assets/search.svg"
+                    falseImage="/src/assets/search_false.svg"
+                />
+
             </div>
         </div>
     );
 }
-
+// @ts-ignore
+const IconButton = ({handleClick, condition, trueImage, falseImage}) => (
+    <button onClick={handleClick} className="input-area-button">
+        {condition ? <img src={trueImage} alt="icon"/> : <img src={falseImage} alt="icon"/>}
+    </button>
+);
 export default ChatPage;
 

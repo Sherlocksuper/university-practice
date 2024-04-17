@@ -7,7 +7,6 @@ interface CodeBlockProps {
 
 
 export const CodeBlock = ({children}: CodeBlockProps) => {
-
     return (
         <>
             <div className={'container'}>

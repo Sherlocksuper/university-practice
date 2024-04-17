@@ -8,13 +8,7 @@ export const routes = createBrowserRouter([
     {
         path: "/",
         element: <Home/>,
-        children: [
-            {
-                index: true,
-                path: "/chat",
-                element: <ChatPage/>
-            },
-        ]
+
     },
 
     {

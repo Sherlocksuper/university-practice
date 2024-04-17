@@ -1,4 +1,4 @@
-import {defaultToken} from "../api/request/chat_base_setting.ts";
+import {defaultToken} from "../api/request/format_save.ts";
 
 const saveToken = (token: string) => {
     localStorage.setItem('token', token)

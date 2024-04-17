@@ -1,26 +1,14 @@
-import {MyUrl} from "../url.ts";
-import {fetchStreamData} from "../base_request.ts";
-import {AIStreamResponseProps, defaultAIStreamResponse, Message} from "./chat_base_setting.ts";
+import {AIStreamResponseProps, defaultAIStreamResponse} from "./format_save.ts";
 
 
 //AutoComplete
-export const autoCompleteChat = (data: Message[]): Promise<Response> => {
-    const api = MyUrl.Chat.AuToComplete
+//对话补全
+// 需要参数：1.历史messages
+// 2.新的messages
+// 历史messages可以存到localStorage中
+// 返回值：AIStreamResponseProps
 
-    const requestData = {
-        model: "kimi",
-        messages: data,
-        use_search: false,
-        stream: true
-    }
-
-    return fetchStreamData({
-        url: api.url,
-        method: api.method,
-        data: requestData
-    })
-};
-
+// 把返回的数据转换成AIStreamResponseProps
 export const updateToAIStreamResponse = (value: Uint8Array): AIStreamResponseProps => {
     const decoder = new TextDecoder();
     const text: string = decoder.decode(value);
