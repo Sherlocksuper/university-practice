@@ -17,7 +17,7 @@ var b = &cos.BaseURL{}
 var c *cos.Client
 
 func init() {
-	u, _ = url.Parse("https://sherlock-1314462060.cos.ap-nanjing.myqcloud.com")
+	u, _ = url.Parse("")
 	b = &cos.BaseURL{BucketURL: u}
 
 	fmt.Println(config.GetConfig().Cos.SecretID)

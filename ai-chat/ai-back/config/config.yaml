@@ -1,13 +1,13 @@
 cos:
-  bucket: "sherlock-1314462060"
-  region: "ap-nanjing"
-  secretid: "REDACTED"
-  secretkey: "REDACTED"
-  baseurl: "https://sherlock-1314462060.cos.ap-nanjing.myqcloud.com"
+  bucket: ""
+  region: ""
+  secretid: ""
+  secretkey: ""
+  baseurl: ""
 
 email:
-  email_author_email: "REDACTED@qq.com"
-  email_password: "REDACTED"
+  email_author_email: ""
+  email_password: ""
   email_title: "注册验证码"
   email_template: "您的注册验证码为：%s, 请在5分钟内完成注册"
 
@@ -18,10 +18,10 @@ mysql:
   username: "root"
   password: "root"
   database: "ai"
-  backup_path: "E:/backup/"
+  backup_path: ""
 
 openai:
-  openai_token: "REDACTED"
+  openai_token: ""
   openai_baseurl: "https://hk.xty.app/v1"
   model: "gpt-3.5-turbo"
   max_tokens: 2000
@@ -33,11 +33,11 @@ redis:
   db: 0
 
 qianfai:
-  diffussion_xl_baseurl: "https://aip.baidubce.com/rpc/2.0/ai_custom/v1/wenxinworkshop/text2image/sd_xl"
-  qf_baseurl: "https://aip.baidubce.com"
-  qf_tokenurl: "/oauth/2.0/token"
-  qf_apikey: "REDACTED"
-  qf_apisecretkey: "REDACTED"
+  diffussion_xl_baseurl:
+  qf_baseurl:
+  qf_tokenurl:
+  qf_apikey:
+  qf_apisecretkey:
 
 cors:
   origin: "*"

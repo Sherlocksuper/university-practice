@@ -12,6 +12,7 @@ export const useChatManager = () => {
         messages: []
     }
 
+    const [openHis, setOpenHis] = React.useState<boolean>(false)
     const [currentChat, setCurrentChat] = React.useState<ChatFormat>({...defaultChat});
 
     //当添加chat时
@@ -24,7 +25,6 @@ export const useChatManager = () => {
         setCurrentChat(newChat);
         chatLocalUtils.addChat(newChat)
     }
-
 
     //删除chat,不能删除当前的chat
     const onDeleteChat = (chatStartAt: string) => {
@@ -40,21 +40,32 @@ export const useChatManager = () => {
         const chat = chatLocalUtils.getChat(Number(chatStartAt))
         console.log("切换到chat" + chatStartAt + ",现在具有messages:" + chat!.messages.length)
         setCurrentChat(chat!)
+        closeHistory()
     }
 
     //发送消息以后更新当前chat
     const onUpdateChat = (chat: ChatFormat) => {
-        //更新了
         console.log("更新了" + chat.chatStartAt, ",现在具有messages:" + chat.messages.length)
         chatLocalUtils.updateChat(chat)
     }
 
+    const openHistory = () => {
+        setOpenHis(true)
+    }
+
+    const closeHistory = () => {
+        setOpenHis(false)
+    }
+
 
     return {
+        openHis,
         currentChat,
         onAddChat,
         onDeleteChat,
         onSwitchChat,
         onUpdateChat,
+        openHistory,
+        closeHistory,
     }
 }

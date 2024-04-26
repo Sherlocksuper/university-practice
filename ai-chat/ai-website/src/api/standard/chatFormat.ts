@@ -1,11 +1,4 @@
-import {Message, OriginMessageFormat} from "../request/format.ts";
-
-export interface AutoComProps {
-    model: string,
-    messages: Array<Message>,
-    use_search: boolean,
-    stream: boolean
-}
+import { OriginMessageFormat} from "../request/format.ts";
 
 export interface ChatFormat {
     chatName?: string;
@@ -13,7 +6,8 @@ export interface ChatFormat {
     messages: OriginMessageFormat[];
 }
 
-export interface ChatListFormat {
-    chatsStartTimes: string[];
+export interface ChatListItem {
+    chatName: string;
+    chatStartAt: number;
 }
 

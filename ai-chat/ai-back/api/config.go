@@ -12,10 +12,11 @@ const (
 	MAXTOKENS = 2000
 )
 
+/*文心一格*/
 const (
-	DIFFUSSION_XL_BASEURL = "https://aip.baidubce.com/rpc/2.0/ai_custom/v1/wenxinworkshop/text2image/sd_xl"
-	QFBASEURL             = "https://aip.baidubce.com"
-	QFTOKENURL            = "/oauth/2.0/token"
-	QFAPIKey              = "REDACTED"
-	QFAPISecretKey        = "REDACTED"
+	DIFFUSSION_XL_BASEURL = ""
+	QFBASEURL             = ""
+	QFTOKENURL            = ""
+	QFAPIKey              = ""
+	QFAPISecretKey        = ""
 )

@@ -1,7 +1,7 @@
 import React, {useContext, useEffect, useState} from 'react';
 import './ChatPage.css';
 import {getFinalFormByList, MessageType, OriginMessageFormat, Role} from "../../api/request/format.ts";
-import ChatBubble from "./chat_bubble/chat_bubble.tsx";
+import ChatBubble from "./chat_bubble/ChatBubble.tsx";
 import {autoComplete} from "../../api/request/chats.ts";
 import {updateToAIStreamResponse} from "../../api/request/chat.ts";
 import {ChatFormat} from "../../api/standard/chatFormat.ts";
@@ -20,6 +20,8 @@ const ChatPage = ({chat}: { chat: ChatFormat }) => {
     }
 
     useEffect(() => {
+
+
         setMessages(chat.messages)
         scrollToBottom();
     }, [chat.messages])
@@ -31,6 +33,11 @@ const ChatPage = ({chat}: { chat: ChatFormat }) => {
 
     const handleSendMessage = async () => {
         if (inputMessage === "" || inputMessage === '') return
+
+        if (chat.messages.length === 0) {
+            chat.chatName = inputMessage.slice(0, 5) + "...";
+            chatContext.onUpdateChat(chat);
+        }
 
         setInputMessage('');
         const currentMessages = [...messages]
@@ -90,7 +97,7 @@ const ChatPage = ({chat}: { chat: ChatFormat }) => {
     return (
         <div className="chat-box">
             <div className="chat-title">
-                {chat.chatStartAt}
+                {chat.chatName}
             </div>
             <div className="messages">
                 {messages.map((messageItem: OriginMessageFormat, index) => (

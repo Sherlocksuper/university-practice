@@ -101,7 +101,7 @@
     text-decoration: underline; /* Add underline on hover */
 }
 
-.url-item{
+.url-item {
     display: flex;
     flex-direction: row;
     align-items: center;

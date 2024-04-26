@@ -5,8 +5,6 @@ class Constant {
   static const String CURRENT_VERSION = '1.0.1';
   static const String login = 'Login';
 
-  // static const String BASE_URL = 'http://10.236.169.48:8080/aiapi';
-  // static const String SOCKET_URL = 'ws://10.236.169.48:8080/ws';
   static const String BASE_URL = "http://zing.nat100.top/api";
   static const String SOCKET_URL = "ws://zing.nat100.top/ws";
 

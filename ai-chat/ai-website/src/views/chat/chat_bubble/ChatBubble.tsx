@@ -1,5 +1,5 @@
 import React from 'react';
-import './chat_bubble.css';
+import './ChatBubble.css';
 import Markdown from "react-markdown";
 import {CodeBlock} from "../../../components/code_block/code_block.tsx";
 import {OriginMessageFormat, Role} from "../../../api/request/format.ts"; // 引入CSS样式文件
