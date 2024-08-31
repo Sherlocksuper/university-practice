@@ -1,6 +1,6 @@
-import {Socket} from "net";
-
 export const longServerPort = 9001
+export const comPort = 89
+export const boardPort = 66
 
 //目标ip和端口号
 export const TARGETIP = "192.168.1.66"
