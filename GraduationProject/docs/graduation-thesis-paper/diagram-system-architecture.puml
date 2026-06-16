@@ -1,0 +1,50 @@
+@startuml
+' 系统总体架构图 — 论文 / PPT 通用
+' 渲染：VS Code PlantUML 预览，或 plantuml diagram-system-architecture.puml
+skinparam defaultFontName SansSerif
+skinparam shadowing false
+skinparam dpi 150
+left to right direction
+
+title 系统总体架构图
+
+actor "注册用户" as U
+
+rectangle "客户端（浏览器）" as CLIENT {
+  [React 单页应用\n(Vite 构建)] as WEB
+}
+
+rectangle "服务端（Node.js + Express）" as SERVER {
+  [REST API / 路由\nJWT 鉴权] as API
+  [认证与用户] as AUTH
+  [聊天与会话] as CHAT
+  [知识库与向量检索] as RAG
+  [深度研究任务编排] as RES
+  [LLM / 嵌入客户端] as LLM
+}
+
+database "SQLite\n(data/app.db)" as DB
+folder "用户数据\n(data/users.json)" as USR
+
+cloud "外部能力\n(LLM / 嵌入 / 联网检索 / SMTP)" as EXT
+
+U --> WEB : 操作界面
+WEB --> API : HTTP + JSON
+API --> AUTH
+API --> CHAT
+API --> RAG
+API --> RES
+
+AUTH --> USR : 读写账户
+CHAT --> DB : 会话与消息
+RAG --> DB : 集合与分块
+RES --> DB : 研究任务与 trace
+
+CHAT --> LLM
+RAG --> LLM
+RES --> LLM
+
+AUTH ..> EXT : 邮件
+LLM --> EXT : API 调用
+
+@enduml

@@ -1,0 +1,40 @@
+@startuml
+' 图：注册与邮箱验证流程（含分支）
+skinparam defaultFontName SansSerif
+skinparam shadowing false
+title 用户注册与邮箱验证流程图
+
+|用户|
+start
+:填写注册信息\nPOST /api/auth/register;
+
+|服务端|
+if (SMTP 已配置?) then (否)
+  :503 smtp_not_configured;
+  stop
+endif
+if (register 校验\n用户名/密码/邮箱?) then (失败)
+  :400 业务错误;
+  stop
+endif
+:写入 users.json\nemailVerified=false\nverifyToken + 过期时间;
+if (发送验证邮件?) then (失败)
+  :500 email_send_failed;
+  stop
+else (成功)
+  :200 verification_email_sent;
+endif
+
+|用户|
+:打开邮件中的验证链接\nGET /api/auth/verify-email?token=…;
+
+|服务端|
+if (verifyEmailToken\n匹配且未过期?) then (是)
+  :emailVerified=true\n清除令牌;
+  :200 返回 username;
+else (否)
+  :400 invalid_or_expired_token;
+endif
+
+stop
+@enduml

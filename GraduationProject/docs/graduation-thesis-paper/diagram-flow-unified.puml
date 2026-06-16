@@ -1,0 +1,45 @@
+@startuml
+' 聊天流程：用户发送消息 → 返回消息
+skinparam defaultFontName SansSerif
+skinparam shadowing false
+
+title 聊天消息处理流程图
+
+start
+:用户发送消息\nPOST /api/chat;
+
+if (校验通过?) then (否)
+  :返回 400/403/503/409;
+  stop
+endif
+
+:读取历史;\n判断是否深度研究;
+
+if (会话绑定知识库?) then (是)
+  :向量检索 → RAG 附录;
+else (否)
+  :无 RAG;
+endif
+
+if (深度研究?) then (否)
+
+  :写入用户消息;
+  :调用 LLM 生成回复;
+  :写入助手消息;
+  :返回 answer;
+
+else (是)
+
+  :创建研究任务;\n写入用户消息;
+  :执行研究管线\n(规划→检索→写作→审查);
+  :报告写入助手消息;
+  if (同步请求?) then (是)
+    :返回 answer;
+  else (否)
+    :返回 taskId\n前端轮询后展示;
+  endif
+
+endif
+
+stop
+@enduml
