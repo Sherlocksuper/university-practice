@@ -1,0 +1,87 @@
+@startuml
+' 图：智能对话主流程（POST /api/chat，含分支）
+skinparam defaultFontName SansSerif
+skinparam shadowing false
+title 智能对话处理流程图（POST /api/chat）
+
+start
+:用户发送消息\nPOST /api/chat\n(sessionId, question, 可选参数);
+
+if (sessionId / question 合法?) then (否)
+  :400 参数错误;
+  stop
+endif
+
+if (会话归属当前用户?) then (否)
+  :403 forbidden_or_not_found;
+  stop
+endif
+
+if (LLM 已配置?) then (否)
+  :503 llm_not_configured;
+  stop
+endif
+
+if (同会话研究任务进行中?) then (是)
+  :409 chat_research_in_progress;
+  stop
+endif
+
+:读取会话历史与绑定知识库列表;
+
+partition "路由：是否深度研究" {
+  if (chatRouteMode = simple?) then (是)
+    :needsResearch = false;
+  elseif (chatRouteMode = deep?) then (是)
+    :needsResearch = true;
+  elseif (环境变量强制 research/simple?) then (是)
+    :按环境变量设定;
+  elseif (寒暄/问候等启发式?) then (是)
+    :needsResearch = false;
+  else (否)
+    :LLM 路由判断\nneedsResearch;
+  endif
+}
+
+partition "可选：RAG 检索" {
+  if (会话绑定知识库?) then (是)
+    if (多库向量检索成功?) then (是)
+      :生成 ragPromptAppendix\n统计 ragHitCount 等;
+    else (异常)
+      :记录日志，附录为空\n继续后续流程;
+    endif
+  else (否)
+    :跳过 RAG;
+  endif
+}
+
+if (needsResearch?) then (否)
+  partition "简单问答分支" {
+    :写入用户消息;
+    if (simpleLLMReply 成功?) then (是)
+      :生成助手正文;
+    else (失败)
+      :助手消息写入错误说明;
+    endif
+    :写入助手消息;
+    :返回 JSON\n(mode=simple, answer, RAG 统计);
+  }
+  stop
+else (是)
+  partition "深度研究分支" {
+    :拼装研究主题\n(可含 RAG 附录);
+    :createTask 登记研究任务;
+    :写入用户消息;
+    if (请求 sync=1?) then (是)
+      :同步执行 runChatResearchPipeline;
+      :从会话取最后一条助手消息;
+    else (否)
+      :异步执行研究管线;
+      :立即返回 taskId\n前端轮询进度;
+    endif
+    :finalize：报告或错误\n写入助手消息;
+  }
+endif
+
+stop
+@enduml

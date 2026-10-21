@@ -1,0 +1,100 @@
+@startuml
+' 图：深度研究多智能体流水线（含分支与降级）
+skinparam defaultFontName SansSerif
+skinparam shadowing false
+title 深度研究任务流程图（多智能体协同）
+
+start
+:创建任务\ntopic + status=created;
+:Coordinator 启动规划;
+
+partition "Planning · Planner" {
+  :Planner 生成子问题与关键词;
+  :去重子问题，保存 plan.json;
+  :status → planning;
+}
+
+partition "Collecting · Researcher + Fetcher" {
+  :status → collecting;
+  while (每个子问题?) is (下一题)
+    if (绑定知识库且可检索?) then (是)
+      :向量检索 kbDocs;
+    else (否)
+      :kbDocs = 空;
+    endif
+    if (知识库命中强\n且非强制联网?) then (是)
+      :跳过 webSearch;
+    else (否)
+      :Researcher 联网检索;
+    endif
+    while (每条候选 URL?) is (下一条)
+      if (域名在屏蔽列表?) then (是)
+        if (有 snippet?) then (是)
+          :用 snippet 作证据;
+        else (否)
+          :跳过该 URL;
+        endif
+      else (否)
+        if (webFetchClean 成功?) then (是)
+          :保存正文;
+        else (失败)
+          if (有 snippet?) then (是)
+            :降级使用 snippet;
+          else (否)
+            :丢弃该条;
+          endif
+        endif
+      endif
+    endwhile (无)
+    :合并 kb + 网页证据\n写入 sources.json;
+  endwhile (完成)
+}
+
+partition "Reading + Writing（按子问题并行）" {
+  :status → reading / writing;
+  while (每个子问题?) is (下一节)
+    if (Reader 解析成功?) then (是)
+      :提炼 claim / support / url;
+    else (失败)
+      :Reader 降级\n从 docs 生成要点;
+    endif
+    if (Writer 成功?) then (是)
+      :生成本节草稿;
+    else (失败)
+      :Writer 降级\n用证据片段拼节;
+    endif
+  endwhile (完成)
+  :合并相邻重复小节;
+  :生成 overview / conclusion\n(失败则跳过);
+  :保存 notes.json;
+}
+
+partition "Reviewing · Critic v0" {
+  :status → reviewing;
+  while (每一节?) is (下一节)
+    :critiqueSection 检查来源与断言;
+    if (存在问题?) then (否)
+      :进入下一节;
+    else (是)
+      if (来源不足?) then (是)
+        :补搜 + 重跑 Reader/Writer;
+      endif
+      if (数值断言无证据?) then (是)
+        :重写本节，弱化具体数字;
+      endif
+      :criticReport 记录修正;
+    endif
+  endwhile (完成)
+}
+
+:组装 report.md 等产物;
+:status → done;
+:写入会话助手消息 / 返回 taskId;
+
+if (全局异常?) then (是)
+  :status → failed\n记录 error;
+  stop
+endif
+
+stop
+@enduml
