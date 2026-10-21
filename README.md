@@ -26,7 +26,7 @@
 - 原仓库的各个分支保存在 `archive/<原仓库名>/<原分支名>` 下，包括未合入默认分支的内容。
 - 合并保留提交记录、作者和时间。为移入对应目录并清理历史敏感内容，提交 SHA 已重新生成。
 - 原私有项目 `ai-chat` 的作者邮箱已改为 GitHub noreply 邮箱，内容中的联系邮箱已替换为示例地址。
-- 各原仓库仍单独保留。本仓库归档代码和 Git 历史，不包含原仓库的 Issues、PR、Stars、Secrets 或 Actions 运行记录。
+- 9 个原仓库已在合并核对后删除，代码和 Git 历史保留在本仓库中；原仓库的 Issues、PR、Stars、Secrets 和 Actions 运行记录未迁入。
 
 各项目的来源、默认分支与归档分支见 [archive-manifest.json](./archive-manifest.json)。
 
