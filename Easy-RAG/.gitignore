@@ -1,0 +1,4 @@
+node_modules
+
+packages/back/.env
+packages/back/env.ts
