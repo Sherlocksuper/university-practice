@@ -1,0 +1,100 @@
+{
+  "archived_on": "2026-10-21",
+  "projects": [
+    {
+      "project": "2022211813-work",
+      "source": "https://github.com/Sherlocksuper/2022211813-work",
+      "default_branch": "main",
+      "archive_branches": [
+        "archive/2022211813-work/2022211813",
+        "archive/2022211813-work/main",
+        "archive/2022211813-work/main2",
+        "archive/2022211813-work/main3"
+      ],
+      "source_commit_count": 2
+    },
+    {
+      "project": "ai-chat",
+      "source": "https://github.com/Sherlocksuper/ai-chat",
+      "default_branch": "main",
+      "archive_branches": [
+        "archive/ai-chat/dev",
+        "archive/ai-chat/main"
+      ],
+      "source_commit_count": 19
+    },
+    {
+      "project": "Easy-RAG",
+      "source": "https://github.com/Sherlocksuper/Easy-RAG",
+      "default_branch": "main",
+      "archive_branches": [
+        "archive/Easy-RAG/main"
+      ],
+      "source_commit_count": 9
+    },
+    {
+      "project": "EasyNeteaseMusic",
+      "source": "https://github.com/Sherlocksuper/EasyNeteaseMusic",
+      "default_branch": "main",
+      "archive_branches": [
+        "archive/EasyNeteaseMusic/main"
+      ],
+      "source_commit_count": 21
+    },
+    {
+      "project": "GraduationProject",
+      "source": "https://github.com/Sherlocksuper/GraduationProject",
+      "default_branch": "main",
+      "archive_branches": [
+        "archive/GraduationProject/main"
+      ],
+      "source_commit_count": 5
+    },
+    {
+      "project": "NeteaseCloudMusicApi",
+      "source": "https://github.com/Sherlocksuper/NeteaseCloudMusicApi",
+      "default_branch": "master",
+      "archive_branches": [
+        "archive/NeteaseCloudMusicApi/master"
+      ],
+      "source_commit_count": 1474
+    },
+    {
+      "project": "OSSDP-Lab2",
+      "source": "https://github.com/Sherlocksuper/OSSDP-Lab2",
+      "default_branch": "main",
+      "archive_branches": [
+        "archive/OSSDP-Lab2/fix",
+        "archive/OSSDP-Lab2/main"
+      ],
+      "source_commit_count": 5
+    },
+    {
+      "project": "Vehicle",
+      "source": "https://github.com/Sherlocksuper/Vehicle",
+      "default_branch": "main",
+      "archive_branches": [
+        "archive/Vehicle/Sherlocksuper-patch-1",
+        "archive/Vehicle/back_end",
+        "archive/Vehicle/feature/20241012_popover_and_issue",
+        "archive/Vehicle/jwt",
+        "archive/Vehicle/lby",
+        "archive/Vehicle/lh",
+        "archive/Vehicle/main",
+        "archive/Vehicle/old",
+        "archive/Vehicle/store",
+        "archive/Vehicle/version6.14"
+      ],
+      "source_commit_count": 256
+    },
+    {
+      "project": "zing_ai",
+      "source": "https://github.com/Sherlocksuper/zing_ai",
+      "default_branch": "main",
+      "archive_branches": [
+        "archive/zing_ai/main"
+      ],
+      "source_commit_count": 3
+    }
+  ]
+}
